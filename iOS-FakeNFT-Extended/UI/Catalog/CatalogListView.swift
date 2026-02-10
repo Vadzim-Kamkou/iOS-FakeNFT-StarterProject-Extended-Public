@@ -21,21 +21,28 @@ struct CatalogListView: View {
     @StateObject private var viewModel = CatalogViewModel()
     
     var body: some View {
-        List(viewModel.catalogs) { catalog in
-            CatalogRowView(catalog: catalog)
-                .listRowSeparator(.hidden)
-                .contentShape(Rectangle())
-                .onTapGesture { selectedItem = catalog }
-        }
-        .listSectionSpacing(0)
-        .listStyle(.plain)
-        .sheet(item: $selectedItem) { item in
-            Text("\(item.title)")
-            //NftDetailBridgeView()
+        ScrollView {
+            LazyVStack(spacing: 12) {
+                ForEach(viewModel.catalogs) { catalog in
+                    NavigationLink {
+                        CollectionView()
+                    } label: {
+                        CatalogRowView(catalog: catalog)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
         }
     }
     
+//        .sheet(item: $selectedItem) { item in
+//            Text("\(item.title)")
+//            //NftDetailBridgeView()
+//        }
     
+ 
     func showNft() {
         //  presentingNft = true
     }
@@ -43,7 +50,10 @@ struct CatalogListView: View {
 }
 
 #Preview {
-    CatalogListView()
+    NavigationStack {
+        CatalogListView()
+    }
+    .buttonStyle(.plain)
 //        .environment(
 //            ServicesAssembly(
 //                networkClient: DefaultNetworkClient(),

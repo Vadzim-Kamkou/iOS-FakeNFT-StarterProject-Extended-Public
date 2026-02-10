@@ -12,4 +12,7 @@ struct CatalogItem: Identifiable {
     let imageName: String
     let title: String
     let count: Int
+    let autor: String
+    let description: String
+    let collection : [CollectionItem]
 }
