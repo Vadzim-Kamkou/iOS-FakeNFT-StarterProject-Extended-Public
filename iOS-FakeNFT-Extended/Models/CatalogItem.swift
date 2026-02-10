@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CatalogItem: Identifiable {
+struct CatalogItem: Identifiable, Hashable {
     let id = UUID()
     let imageName: String
     let title: String

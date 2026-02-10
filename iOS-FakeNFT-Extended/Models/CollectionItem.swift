@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CollectionItem: Identifiable {
+struct CollectionItem: Identifiable, Hashable {
     let id = UUID()
     let imageName: String
     let isFavourite: Bool

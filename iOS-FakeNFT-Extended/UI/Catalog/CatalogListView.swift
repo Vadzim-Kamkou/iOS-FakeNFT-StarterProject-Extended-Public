@@ -12,20 +12,21 @@ struct CatalogListView: View {
     @State private var selectedItem: CatalogItem?
     @StateObject private var viewModel = CatalogViewModel()
     
+    
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 12) {
-                ForEach(viewModel.catalogs) { catalog in
-                    NavigationLink {
-                        CollectionView(catalog: catalog)
-                    } label: {
-                        CatalogRowView(catalog: catalog)
-                    }
-                    .buttonStyle(.plain)
+        List(viewModel.catalogs) { catalog in
+            CatalogRowView(catalog: catalog)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    selectedItem = catalog
                 }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+                .listRowSeparator(.hidden)
+            
+        }
+        .listSectionSpacing(0)
+        .listStyle(.plain)
+        .navigationDestination(item: $selectedItem) { catalog in
+            CollectionView(catalog: catalog)
         }
     }
 }
