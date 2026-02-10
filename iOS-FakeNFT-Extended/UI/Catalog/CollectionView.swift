@@ -8,9 +8,10 @@ import SwiftUI
 
 struct CollectionView: View {
     
-    @StateObject private var viewModel = CatalogViewModel()
     @Environment(\.dismiss) private var dismiss
+    @State private var selectedNft: CollectionItem?
     
+    let catalog: CatalogItem
     
     let columns = [
         GridItem(.flexible(), spacing: 12),
@@ -20,32 +21,35 @@ struct CollectionView: View {
     
     var body: some View {
         ScrollView {
-            Image(viewModel.catalogs[0].imageName)
+            Image(catalog.imageName)
                 .resizable()
                 .scaledToFit()
                 .clipped()
                 .clipShape(RoundedBottomCorners(radius: 12))
             
             VStack (alignment: .leading, spacing: 4) {
-                Text(viewModel.catalogs[0].title)
+                Text(catalog.title)
                     .font(.body22Bold)
                 
                 HStack {
                     Text("Автор коллекции:")
                         .font(.regular13)
-                    Text("\(viewModel.catalogs[0].autor)")
+                    Text("\(catalog.autor)")
                         .font(.regular15)
                         .foregroundColor(.blueUniversal)
                 }
-                Text("\(viewModel.catalogs[0].description)")
+                Text("\(catalog.description)")
                     .font(.regular13)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 16)
             
             LazyVGrid(columns: columns, spacing: 12) {
-                ForEach(viewModel.catalogs[0].collection) { item in
+                ForEach(catalog.collection) { item in
                     CollectionNftView(collectionItem: item)
+                        .onTapGesture {
+                            selectedNft = item
+                        }
                 }
             }
             .padding(.horizontal, 16)
@@ -62,19 +66,15 @@ struct CollectionView: View {
             }
         }
         .toolbarBackground(.hidden, for: .navigationBar)
-        
+        .sheet(item: $selectedNft) { item in
+            NftDetailBridgeView()
+        }
     }
-    
 }
-
-#Preview {
-    CollectionView()
-}
-
 
 struct RoundedBottomCorners: Shape {
-    var radius: CGFloat = 16
-
+    var radius: CGFloat = 12
+    
     func path(in rect: CGRect) -> Path {
         let path = UIBezierPath(
             roundedRect: rect,
@@ -83,4 +83,8 @@ struct RoundedBottomCorners: Shape {
         )
         return Path(path.cgPath)
     }
+}
+
+#Preview {
+    CollectionView(catalog: mockCatalogs[0])
 }

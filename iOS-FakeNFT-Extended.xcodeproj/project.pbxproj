@@ -148,20 +148,13 @@
 		0D466C482F3A28D3008CCFB8 /* Catalog */ = {
 			isa = PBXGroup;
 			children = (
+				0D466C492F3A28FA008CCFB8 /* CollectionView.swift */,
+				0D466C4C2F3A291C008CCFB8 /* CollectionNftView.swift */,
 				ABC5E1B82C31FD51002B4068 /* CatalogView.swift */,
 				0D466C422F39E5AE008CCFB8 /* CatalogListView.swift */,
 				0DB4BCF42F363A02003E620D /* CatalogRowView.swift */,
 			);
 			path = Catalog;
-			sourceTree = "<group>";
-		};
-		0D466C4B2F3A2907008CCFB8 /* Collection */ = {
-			isa = PBXGroup;
-			children = (
-				0D466C492F3A28FA008CCFB8 /* CollectionView.swift */,
-				0D466C4C2F3A291C008CCFB8 /* CollectionNftView.swift */,
-			);
-			path = Collection;
 			sourceTree = "<group>";
 		};
 		0DB4BCF12F363566003E620D /* ViewModels */ = {
@@ -314,7 +307,6 @@
 			children = (
 				ABC5E16D2C31F5AF002B4068 /* ContentView.swift */,
 				ABC5E1B42C31FC57002B4068 /* TabBarView.swift */,
-				0D466C4B2F3A2907008CCFB8 /* Collection */,
 				0D466C482F3A28D3008CCFB8 /* Catalog */,
 				ABC5E1E72C320610002B4068 /* NftDetailBridgeView.swift */,
 				ABC5E1C82C3203E9002B4068 /* NftDetails */,

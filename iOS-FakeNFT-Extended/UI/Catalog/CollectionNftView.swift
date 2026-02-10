@@ -55,6 +55,7 @@ struct CollectionNftView: View {
             Text(Image(.ratingStarNoActive))
         }
     }
+    
     var cartImage: Image {
         collectionItem.isInCart ? Image(.cartNoActive) : Image(.cartActive)
     }

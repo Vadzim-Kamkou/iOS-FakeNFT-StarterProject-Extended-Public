@@ -7,16 +7,8 @@
 
 import SwiftUI
 
-private enum Constants {
-    static let openNftTitle = NSLocalizedString("Catalog.openNft", comment: "")
-}
-
 struct CatalogListView: View {
     
-//    @Environment(ServicesAssembly.self) var servicesAssembly
-//    @State private var presentingNft = false
-//    @State private var selectedNft: Nft?
-
     @State private var selectedItem: CatalogItem?
     @StateObject private var viewModel = CatalogViewModel()
     
@@ -25,7 +17,7 @@ struct CatalogListView: View {
             LazyVStack(spacing: 12) {
                 ForEach(viewModel.catalogs) { catalog in
                     NavigationLink {
-                        CollectionView()
+                        CollectionView(catalog: catalog)
                     } label: {
                         CatalogRowView(catalog: catalog)
                     }
@@ -36,28 +28,10 @@ struct CatalogListView: View {
             .padding(.vertical, 8)
         }
     }
-    
-//        .sheet(item: $selectedItem) { item in
-//            Text("\(item.title)")
-//            //NftDetailBridgeView()
-//        }
-    
- 
-    func showNft() {
-        //  presentingNft = true
-    }
-    
 }
 
 #Preview {
     NavigationStack {
         CatalogListView()
     }
-    .buttonStyle(.plain)
-//        .environment(
-//            ServicesAssembly(
-//                networkClient: DefaultNetworkClient(),
-//                nftStorage: NftStorageImpl()
-//            )
-//        )
 }

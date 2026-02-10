@@ -14,10 +14,6 @@ struct CatalogView: View {
                         }
                     }
                 }
-                .backgroundStyle(.background)
-                //.sheet(isPresented: $presentingNft) {
-                //  NftDetailBridgeView()
-                //}
         }
     }
 }
