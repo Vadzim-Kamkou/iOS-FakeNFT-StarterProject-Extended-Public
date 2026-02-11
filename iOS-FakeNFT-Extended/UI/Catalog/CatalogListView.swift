@@ -9,8 +9,8 @@ import SwiftUI
 
 struct CatalogListView: View {
     
+    @ObservedObject var viewModel: CatalogViewModel
     @State private var selectedItem: CatalogItem?
-    @StateObject private var viewModel = CatalogViewModel()
     
     
     var body: some View {
@@ -33,6 +33,6 @@ struct CatalogListView: View {
 
 #Preview {
     NavigationStack {
-        CatalogListView()
+        CatalogListView(viewModel: CatalogViewModel())
     }
 }

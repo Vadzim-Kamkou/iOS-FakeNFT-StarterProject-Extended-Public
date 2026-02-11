@@ -6,7 +6,7 @@ struct CatalogView: View {
     
     var body: some View {
         NavigationStack {
-            CatalogListView()
+            CatalogListView(viewModel: viewModel)
                 .toolbar {
                     ToolbarItemGroup(placement: .topBarTrailing) {
                         Button(action: viewModel.catalogSorting) {
