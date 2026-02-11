@@ -11,10 +11,20 @@ import SwiftUI
 struct CollectionNftView: View {
     
     let collectionItem: CollectionItem
+    @State private var isFavouriteActive: Bool
+    @State private var isInCartActive: Bool
     
-    var favouriteImage: Image {
-        collectionItem.isFavourite ? Image(.favouritesIcon) : Image(.favouritesIconNo)
+    init(collectionItem: CollectionItem) {
+        self.collectionItem = collectionItem
+        _isFavouriteActive = State(initialValue: collectionItem.isFavourite)
+        _isInCartActive = State(initialValue: collectionItem.isInCart)
+        
     }
+    
+    private var favouriteImage: Image {
+        isFavouriteActive ? Image(.favouritesIcon) : Image(.favouritesIconNo)
+    }
+    
     var rating: Text {
         switch collectionItem.ratings {
         case 1:
@@ -56,10 +66,11 @@ struct CollectionNftView: View {
         }
     }
     
-    var cartImage: Image {
-        collectionItem.isInCart ? Image(.cartNoActive) : Image(.cartActive)
+    
+    private var cartImage: Image {
+        isInCartActive ? Image(.cartNoActive) : Image(.cartActive)
     }
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Image(collectionItem.imageName)
@@ -69,11 +80,16 @@ struct CollectionNftView: View {
                 .clipped()
                 .cornerRadius(12)
                 .overlay(
-                    favouriteImage
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 40, height: 40)
-                        .offset(x: 33, y: -33),
+                    Button {
+                        isFavouriteActive.toggle()
+                    } label: {
+                        favouriteImage
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 40, height: 40)
+                            .offset(x: 33, y: -33)
+                    }
+                        .buttonStyle(.plain)
                 )
             rating
             HStack {
@@ -84,10 +100,19 @@ struct CollectionNftView: View {
                         .font(.medium10)
                 }
                 Spacer()
-                cartImage
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 40, height: 40)
+                Button {
+                    isInCartActive.toggle()
+                } label: {
+                    cartImage
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 40)
+                }
+                .buttonStyle(.plain)
+                
+                
+                
+                
             }
         }
         .frame(width: 108)
