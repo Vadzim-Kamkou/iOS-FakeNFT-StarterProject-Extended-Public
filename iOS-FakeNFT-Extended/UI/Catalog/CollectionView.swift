@@ -10,6 +10,8 @@ struct CollectionView: View {
     
     @Environment(\.dismiss) private var dismiss
     @State private var selectedNft: CollectionItem?
+    @State private var showAuthorPage = false
+    
     
     let catalog: CatalogItem
     
@@ -26,10 +28,13 @@ struct CollectionView: View {
                 .scaledToFit()
                 .clipped()
                 .clipShape(RoundedBottomCorners(radius: 12))
+                .padding(.bottom, 8)
             
-            VStack (alignment: .leading, spacing: 4) {
+            
+            VStack (alignment: .leading, spacing: 8) {
                 Text(catalog.title)
                     .font(.body22Bold)
+                
                 
                 HStack {
                     Text("Автор коллекции:")
@@ -37,12 +42,31 @@ struct CollectionView: View {
                     Text("\(catalog.autor)")
                         .font(.regular15)
                         .foregroundColor(.blueUniversal)
+                        .onTapGesture {
+                            showAuthorPage = true
+                        }
+                        .fullScreenCover(isPresented: $showAuthorPage) {
+                            NavigationStack {
+                                WebView(url: URL(string: "https://practicum.yandex.com/")!)
+                                    .toolbar {
+                                        ToolbarItem(placement: .navigationBarLeading) {
+                                            Button {
+                                                showAuthorPage = false
+                                            } label: {
+                                                Image(.backButtonChevron)
+                                                    .tint(.black)
+                                            }
+                                        }
+                                    }
+                            }
+                        }
                 }
                 Text("\(catalog.description)")
                     .font(.regular13)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 16)
+            .padding(.bottom, 10)
             
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(catalog.collection) { item in
@@ -60,7 +84,7 @@ struct CollectionView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: { dismiss() }) {
-                    Image(systemName: "chevron.left")
+                    Image(.backButtonChevron)
                         .tint(.black)
                 }
             }

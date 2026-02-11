@@ -115,7 +115,7 @@ struct CollectionNftView: View {
                 
             }
         }
-        .frame(width: 108)
+        .frame(width: 108, height: 192)
     }
 }
 
