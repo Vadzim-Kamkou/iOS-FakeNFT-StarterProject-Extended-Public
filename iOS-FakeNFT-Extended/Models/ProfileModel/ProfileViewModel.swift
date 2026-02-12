@@ -13,7 +13,7 @@ class ProfileViewModel: ObservableObject {
     @Published var description: String
     @Published var websiteDisplay: String
     @Published var avatarURL: String
-    @Published var websiteFullURL: String = "https://www.chess.com/ru"
+    @Published var websiteFullURL: String = "https://practicum.yandex.ru/ios-developer/?from=catalog"
     
     @Published var myNftCount: Int
     @Published var favoriteNftCount: Int
