@@ -7,9 +7,10 @@
 
 import Foundation
 
-struct CartNFTModel: Identifiable {
+struct CartNFTModel: Identifiable, Sendable {
     let id = UUID()
-    let name: String
+    let imageName: String
+    let nftName: String
     let countStars: Int
-    let price: Int
+    let price: Double
 }
