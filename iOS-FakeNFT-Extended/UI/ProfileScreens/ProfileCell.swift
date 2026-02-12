@@ -20,7 +20,7 @@ struct ProfileCell<Destination: View>: View {
                     .font(.bodyBold)
                     .foregroundColor(.primary)
                 
-                Text("\(number)")
+                Text("(\(number))")
                     .font(.bodyBold)
                     .foregroundColor(.primary)
                 
