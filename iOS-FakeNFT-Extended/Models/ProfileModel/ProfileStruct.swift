@@ -6,17 +6,15 @@
 //
 import Foundation
 
-// Переработанная структура профиля — теперь один массив всех NFT
 struct ProfileStruct: Hashable, Identifiable {
     let id = UUID()
     let name: String
     let description: String
     let site: String
     let url: String
-    let allNfts: [NftId]  // один массив всех NFT пользователя
+    let allNfts: [NftId]
 }
 
-// NftId без изменений
 struct NftId: Hashable, Identifiable {
     let id = UUID()
     let name: String
@@ -27,13 +25,13 @@ struct NftId: Hashable, Identifiable {
     var isLiked: Bool
 }
 
-// Моковые NFT (16 штук — 10 "моих" + 6 избранных, но теперь в одном массиве)
+
 extension NftId {
     static let mockAllNfts: [NftId] = [
-        // 6 избранных (как на скрине, isLiked = true)
+       
         NftId(
             name: "Archie",
-            logo: "https://example.com/archie.jpg",  // замени на реальные URL изображений
+            logo: "https://example.com/archie.jpg",
             price: "1,78",
             rating: 5,
             creater: "Creator A",
@@ -79,8 +77,6 @@ extension NftId {
             creater: "Creator F",
             isLiked: true
         ),
-        
-        // 10 остальных NFT (придумал имена, рейтинги и цены разные)
         NftId(
             name: "Cosmic Cat",
             logo: "https://example.com/cosmic_cat.jpg",
@@ -164,7 +160,6 @@ extension NftId {
     ]
 }
 
-// Обновлённый мок профиля — один массив allNfts
 extension ProfileStruct {
     static let mock = ProfileStruct(
         name: "Joaquin Phoenix",
@@ -174,5 +169,5 @@ extension ProfileStruct {
         allNfts: NftId.mockAllNfts
     )
 }
-// Обновлённый мок профиля с заполненными массивами
+
 
