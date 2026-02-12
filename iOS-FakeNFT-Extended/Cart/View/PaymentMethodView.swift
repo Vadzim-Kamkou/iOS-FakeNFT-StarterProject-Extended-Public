@@ -40,12 +40,12 @@ struct PaymentMethodView: View {
     }
 }
 
-//#Preview {
-//    @Previewable @State var path = [String]()
-//    
-//    ZStack {
-//        Color.backgroundForView
-//            .ignoresSafeArea()
-//        PaymentMethodView(path: $path)
-//    }
-//}
+#Preview {
+    @Previewable @State var path = [String]()
+    
+    ZStack {
+        Color.backgroundForView
+            .ignoresSafeArea()
+        PaymentMethodView(path: $path)
+    }
+}

@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct CartCellView:View {
+    let viewModel: CartNFTViewModel
+    let nft: CartNFTModel
+    
     var body: some View {
         HStack(spacing: 0) {
             cartItemInfo
@@ -18,7 +21,7 @@ struct CartCellView:View {
     
     private var removeButton: some View {
         Button {
-            print("Удаляем объект")
+            viewModel.removeButtonTapped(for: nft)
         } label: {
             Image(.removeNFT)
                 .resizable()
@@ -35,7 +38,7 @@ struct CartCellView:View {
             VStack(alignment: .leading, spacing: 20) {
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("April") // take at VM
+                    Text(String(nft.nftName))
                         .font(.bodyBold)
                         .foregroundStyle(.text)
                     starRatingView
@@ -45,7 +48,7 @@ struct CartCellView:View {
                     Text("Price")
                         .font(.caption2)
                         .foregroundStyle(.text)
-                    Text("1,78 ETH")
+                    Text(nft.price.changeMark() + " ETH")
                         .font(.bodyBold)
                         .foregroundStyle(.text)
                 }
@@ -56,20 +59,28 @@ struct CartCellView:View {
     
     private var starRatingView: some View {
         HStack {
-            ForEach(0..<5) { _ in
-                Image(.activeStar)
-                    .resizable()
-                    .frame(width: 12, height: 12)
+            ForEach(1..<6) { i in
+                if i <= nft.countStars {
+                    Image(.activeStar)
+                        .resizable()
+                        .frame(width: 12, height: 12)
+                } else {
+                    Image(.unActiveStar)
+                        .resizable()
+                        .frame(width: 12, height: 12)
+                }
             }
         }
     }
 }
 
 #Preview {
+    @Previewable @State var viewModel = CartNFTViewModel(nftService: MockNFTService())
+    
     ZStack {
         Color.clear
             .background(.backgroundForView)
-        CartCellView()
+        CartCellView(viewModel: viewModel, nft: CartNFTModel(imageName:"mockNFT", nftName: "NFT 1" , countStars: 5, price: 1.2))
             .padding(20)
     }
 }

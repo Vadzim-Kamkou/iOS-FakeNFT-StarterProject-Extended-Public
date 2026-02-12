@@ -8,21 +8,20 @@ import ProgressHUD
 import SwiftUI
 
 struct CartMainView: View {
-    @State private var isShowingDeleteConfirmation = false
     @State private var path: [String] = []
-    @State var mocksArray = Array(repeating: 5, count: 0) // временно заменить на данные во viewModel
+    @Bindable var viewModel: CartNFTViewModel
     
     var body: some View {
         NavigationStack(path: $path) {
             
             ZStack {
                 Color.backgroundForView.ignoresSafeArea()
-                if mocksArray.isEmpty {
+                if viewModel.NFTArrayIsEmpty {
                     EmptyCartView
                 } else {
                     mainCartView
-                        .fullScreenCover(isPresented: $isShowingDeleteConfirmation) {
-                            DeleteConfirmationView()
+                        .fullScreenCover(isPresented: $viewModel.isShowingDeleteConfirmation) {
+                            DeleteConfirmationView(viewModel: viewModel)
                         }
                 }
             }
@@ -30,10 +29,12 @@ struct CartMainView: View {
         }
         .onAppear {
             Task {
-                ProgressHUD.animate()
-                try? await Task.sleep(nanoseconds: 1_500_000_000) // временно для теста
-                mocksArray = Array(repeating: 5, count: 5) // временно заменить на данные во viewModel
-                ProgressHUD.dismiss()
+                if viewModel.NFTArrayIsEmpty {
+                    ProgressHUD.animate()
+                    try? await Task.sleep(nanoseconds: 1_500_000_000) // временно для теста ProgressHUD
+                    await viewModel.createMocksNFTArray()
+                    ProgressHUD.dismiss()
+                }
             }
         }
     }
@@ -41,7 +42,7 @@ struct CartMainView: View {
     private var mainCartView: some View {
         VStack(spacing: 0) {
             filterButton
-            CartItemsListView(nftsMocks: mocksArray)
+            CartItemsListView(viewModel: viewModel)
             paymentBlock
         }
     }
@@ -59,7 +60,7 @@ struct CartMainView: View {
         HStack(spacing: 0) {
             Spacer()
             Button {
-                print("Фильтруем данные")
+                print("[CartMainView]: filterButton - Фильтруем данные")
             } label: {
                 Image(.sortButton)
                     .resizable()
@@ -73,17 +74,15 @@ struct CartMainView: View {
     private var paymentBlock: some View {
         HStack(spacing: 24) {
             VStack(alignment:.leading, spacing: 0) {
-                Text("3 NFT")
+                Text(String(viewModel.NFTCounts).NFTStyleFormater)
                     .font(.caption1)
                     .foregroundStyle(.text)
-                Text("5,34 ETH")
+                Text(viewModel.cartNFTTotalPrice.changeMark().ETHStyleFormater)
                     .font(.bodyBold)
                     .foregroundStyle(.greenUniversal)
             }
             ActionButton(title: "For payment", isBoldTextButton: true, cornerRadius: 16, textColor: .white) {
                 path.append("Payment")
-                print("🔵 path теперь: \(path)")
-                
             }
         }
         .padding(16)
@@ -98,6 +97,7 @@ struct CartMainView: View {
 }
 
 #Preview {
+    @Previewable @State var viewModel = CartNFTViewModel(nftService: MockNFTService())
     ZStack {
         Color.clear
             .background(.backgroundForView)
@@ -110,7 +110,7 @@ struct CartMainView: View {
                 .tabItem {
                     Label("Каталог", systemImage: "square.grid.2x2")
                 }
-            CartMainView()
+            CartMainView(viewModel: viewModel)
                 .tabItem {
                     Label("Корзина", systemImage: "cart")
                 }
@@ -120,13 +120,15 @@ struct CartMainView: View {
 }
 
 #Preview("Russian") {
-    CartMainView()
+    @Previewable @State var viewModel = CartNFTViewModel(nftService: MockNFTService())
+    
+    CartMainView(viewModel: viewModel)
         .environment(\.locale, .init(identifier: "ru"))
 }
 
 #Preview("English") {
-    CartMainView()
+    @Previewable @State var viewModel = CartNFTViewModel(nftService: MockNFTService())
+    
+    CartMainView(viewModel: viewModel)
         .environment(\.locale, .init(identifier: "en"))
 }
-
-

@@ -8,15 +8,14 @@
 import SwiftUI
 
 struct DeleteConfirmationView: View {
+    let viewModel: CartNFTViewModel
     
-    @Environment(\.dismiss) private var dismiss
-
     var body: some View {
         ZStack {
             Color.clear
                 .background(.ultraThinMaterial.opacity(0.99))
                 .ignoresSafeArea()
-
+            
             VStack(spacing: 12) {
                 Image(.mockNFT)
                     .resizable()
@@ -29,29 +28,27 @@ struct DeleteConfirmationView: View {
                     .frame(maxWidth: .infinity)
                 HStack(spacing: 8) {
                     ActionButton(title: "Remove", isBoldTextButton: false, cornerRadius: 12, textColor: .red) {
-                        print("Реально хотим удалить")
-                        dismiss()                    }
+                        viewModel.confirmDeletion(true)
+                    }
                     ActionButton(title: "Cancel", isBoldTextButton: false, cornerRadius: 12, textColor: .white) {
-                        print("Реально хотим вернуться не удаляя")
-                        dismiss()                    }
+                        viewModel.confirmDeletion(false)
+                    }
                 }
                 .padding(.top, 8)
                 .padding(.horizontal, 57)
-//                Slider(value: $blurAmount, in: 0...30)
-//                    .padding()
             }
         }
-        .presentationBackground(.clear) // ← ВАЖНО! Для iOS 16.4+
+        .presentationBackground(.clear)
         
     }
 }
 
-//#Preview {
-//    @Previewable @State var status = true
-//    ZStack {
-//        Color.clear
-//            .background(.red)
-//        DeleteConfirmationView(isPresented: $status)
-//
-//    }
-//}
+#Preview {
+    @Previewable @State var viewModel = CartNFTViewModel(nftService: MockNFTService())
+    
+    ZStack {
+        Color.clear
+            .background(.white)
+        DeleteConfirmationView(viewModel: viewModel)
+    }
+}

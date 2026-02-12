@@ -7,12 +7,13 @@
 import SwiftUI
 
 struct CartItemsListView: View {
-    let nftsMocks: [Int]
+    let viewModel: CartNFTViewModel
+    
     var body: some View {
         List() {
-            ForEach(1..<5) { _ in // временно заменить на прямую с массивом  NFT
+            ForEach(viewModel.NFTArray) { nft in
                 Section {
-                    CartCellView()
+                    CartCellView(viewModel: viewModel, nft: nft)
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets())
                         .padding(16)
@@ -25,9 +26,16 @@ struct CartItemsListView: View {
 }
 
 #Preview {
+    @Previewable @State var viewModel = CartNFTViewModel(nftService: MockNFTService())
+    
     ZStack {
         Color.clear
             .background(.backgroundForView)
-        CartItemsListView(nftsMocks: [1,2,3,4])
+        CartItemsListView(viewModel: viewModel)
+    }
+    .onAppear {
+        Task {
+            await viewModel.createMocksNFTArray()
+        }
     }
 }
