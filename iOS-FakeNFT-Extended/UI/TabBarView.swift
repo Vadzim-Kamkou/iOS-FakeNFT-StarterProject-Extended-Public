@@ -4,6 +4,7 @@ struct TabBarView: View {
     
     @State private var selectedTab = 0
     @State private var stateCurt = false
+    @State var cartViewModel = CartNFTViewModel(nftService: MockNFTService())
     
     init() {
         // Настройка цветов при инициализации
@@ -57,7 +58,7 @@ struct TabBarView: View {
                     }
                 }
                 .tag(1)
-            CartMainView()
+            CartMainView(viewModel: cartViewModel)
                 .onAppear {
                     stateCurt = true
                 }
