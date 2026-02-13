@@ -6,21 +6,16 @@
 //
 import SwiftUI
 import Kingfisher
+import ProgressHUD
 
 struct EditProfileScreen: View {
     @EnvironmentObject var viewModel: ProfileViewModel
     @Environment(\.dismiss) private var dismiss
-    
-    // Локальные копии для редактирования (изменения применяются только при "Сохранить")
     @State private var localName: String = ""
     @State private var localDescription: String = ""
     @State private var localWebsiteDisplay: String = ""
     @State private var localAvatarURL: String = ""
-    
-    // 👇 Флаг для предотвращения мелькания кнопки при первом появлении
     @State private var isFirstAppear = true
-    
-    // Модалки
     @State private var showingPhotoDialog = false
     @State private var showingPhotoURLAlert = false
     @State private var newPhotoURLText: String = "https://"
@@ -30,7 +25,6 @@ struct EditProfileScreen: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
-                    // Аватарка (превью локальной версии)
                     ZStack(alignment: .bottomTrailing) {
                         KFImage(URL(string: localAvatarURL))
                             .placeholder {
@@ -66,13 +60,19 @@ struct EditProfileScreen: View {
                     Spacer(minLength: 80)
                 }
             }
-            
-            // Кнопка "Сохранить"
             .safeAreaInset(edge: .bottom) {
                 if hasChanges {
                     Button {
-                        applyChanges()
-                        dismiss()
+                        Task {
+                            ProgressHUD.animate()
+                            applyChanges()
+                            try? await Task.sleep(for: .seconds(1.5))
+                            try? await Task.sleep(for: .seconds(1.0))
+                            ProgressHUD.dismiss()
+                            await MainActor.run {
+                                dismiss()
+                            }
+                        }
                     } label: {
                         Text("Сохранить")
                             .font(.bodyBold)
@@ -107,7 +107,6 @@ struct EditProfileScreen: View {
                 }
             }
             .onAppear {
-                // 👇 Загружаем текущие данные из viewModel ТОЛЬКО при первом появлении
                 if isFirstAppear {
                     localName = viewModel.name
                     localDescription = viewModel.description
@@ -116,8 +115,6 @@ struct EditProfileScreen: View {
                     isFirstAppear = false
                 }
             }
-            
-            // Action sheet для фото (стандартный confirmationDialog снизу)
             .confirmationDialog("Фото профиля", isPresented: $showingPhotoDialog, titleVisibility: .visible) {
                 Button("Изменить фото") {
                     showingPhotoURLAlert = true
@@ -127,8 +124,6 @@ struct EditProfileScreen: View {
                 }
                 Button("Отмена", role: .cancel) {}
             }
-            
-            // Алерт по центру для ввода ссылки
             .alert("Ссылка на фото", isPresented: $showingPhotoURLAlert) {
                 TextField("https://", text: $newPhotoURLText)
                     .keyboardType(.URL)
@@ -157,10 +152,7 @@ struct EditProfileScreen: View {
             }
         }
     }
-    
-    // 👇 Вычисляем, есть ли изменения (сравниваем локальные с оригинальными из viewModel)
     private var hasChanges: Bool {
-        // 👇 Если экран ещё не загрузил данные — изменений нет
         guard !isFirstAppear else { return false }
         
         return localName != viewModel.name ||
@@ -168,16 +160,12 @@ struct EditProfileScreen: View {
         localWebsiteDisplay != viewModel.websiteDisplay ||
         localAvatarURL != viewModel.avatarURL
     }
-    
-    // Применяем локальные изменения к shared viewModel
     private func applyChanges() {
         viewModel.name = localName
         viewModel.description = localDescription
         viewModel.websiteDisplay = localWebsiteDisplay
         viewModel.avatarURL = localAvatarURL
     }
-    
-    // Поля
     @ViewBuilder
     private func singleLineField(title: String, text: Binding<String>, keyboardType: UIKeyboardType = .default) -> some View {
         VStack(alignment: .leading, spacing: 8) {
