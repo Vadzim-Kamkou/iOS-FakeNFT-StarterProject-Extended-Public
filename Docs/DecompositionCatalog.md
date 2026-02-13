@@ -9,11 +9,11 @@
 
 ## Модуль 1:Верстка экранов на моковых данных
 
-- Планирование, изучение ТЗ, макетов, настройка окружения (est: 3 часа; fact: x часов)
-- Подготовка и проверка наличия нужных assets (colors, fonts, images) (est: 1 часа; fact: x часов)
-- CatalogView, CatalogListView,  CatalogListRowView (обложка, название, количество NFT), CatalogViewModel, CatalogModel (est: 6 часа; fact: x часов)
-- CollectionView (обложка, название, описание коллекции, имя автора (ссылка на сайт в WKWebView + UIViewRepresentable)  CollectionNFTView (коллекция NFT (LazyVGrid)) Изображение, название, рейтинг, стоимость (в ETH), кнопка добавления в избранное, кнопка добавления в корзину (отображает крестик при наличии NFT в корзине) Нажатие на ячейку открывает экран NFT (реализуется наставником), CollectionViewModel, CollectionModel (est: 8 часа; fact: x часов)
-- Тестирование, проверка соответствия PR_SwiftUI, багфиксы после ревью (est: 4 часа; fact: x часов)
+- Планирование, изучение ТЗ, макетов, настройка окружения (est: 3 часа; fact: 3 часов)
+- Подготовка и проверка наличия нужных assets (colors, fonts, images) (est: 1 часа; fact: 1 часов)
+- CatalogView, CatalogListView,  CatalogListRowView (обложка, название, количество NFT), CatalogViewModel, CatalogModel (est: 6 часа; fact: 8 часов)
+- CollectionView (обложка, название, описание коллекции, имя автора (ссылка на сайт в WKWebView + UIViewRepresentable)  CollectionNFTView (коллекция NFT (LazyVGrid)) Изображение, название, рейтинг, стоимость (в ETH), кнопка добавления в избранное, кнопка добавления в корзину (отображает крестик при наличии NFT в корзине) Нажатие на ячейку открывает экран NFT (реализуется наставником), CollectionViewModel, CollectionModel (est: 8 часа; fact: 6 часов)
+- Тестирование, проверка соответствия PR_SwiftUI, багфиксы после ревью (est: 4 часа; fact: 2 часов)
 
 ## Модуль 2: Интеграция с API и остальными сервисами приложения.
 - Изучение API и сервисов проекта (est: 2 часа; fact: x часов)
