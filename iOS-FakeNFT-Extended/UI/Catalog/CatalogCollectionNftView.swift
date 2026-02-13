@@ -1,5 +1,5 @@
 //
-//  CollectionNftView.swift
+//  CatalogCollectionNftView.swift
 //  iOS-FakeNFT-Extended
 //
 //  Created by Vadzim on 9.02.26.
@@ -8,7 +8,7 @@
 import SwiftUI
 
 
-struct CollectionNftView: View {
+struct CatalogCollectionNftView: View {
     
     let collectionItem: CollectionItem
     @State private var isFavouriteActive: Bool
@@ -120,5 +120,5 @@ struct CollectionNftView: View {
 }
 
 #Preview {
-    CollectionNftView(collectionItem: mockCollection[0])
+    CatalogCollectionNftView(collectionItem: mockCollection[0])
 }

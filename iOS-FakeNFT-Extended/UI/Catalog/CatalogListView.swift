@@ -26,7 +26,7 @@ struct CatalogListView: View {
         .listSectionSpacing(0)
         .listStyle(.plain)
         .navigationDestination(item: $selectedItem) { catalog in
-            CollectionView(catalog: catalog)
+            CatalogCollectionView(catalog: catalog)
         }
     }
 }

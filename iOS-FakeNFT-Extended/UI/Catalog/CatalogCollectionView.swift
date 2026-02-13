@@ -1,12 +1,12 @@
 //
-//  CollectionView.swift
+//  CatalogCollectionView.swift
 //  iOS-FakeNFT-Extended
 //
 //  Created by Vadzim on 9.02.26.
 //
 import SwiftUI
 
-struct CollectionView: View {
+struct CatalogCollectionView: View {
     
     @Environment(\.dismiss) private var dismiss
     @State private var selectedNft: CollectionItem?
@@ -70,7 +70,7 @@ struct CollectionView: View {
             
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(catalog.collection) { item in
-                    CollectionNftView(collectionItem: item)
+                    CatalogCollectionNftView(collectionItem: item)
                         .onTapGesture {
                             selectedNft = item
                         }
@@ -110,5 +110,5 @@ struct RoundedBottomCorners: Shape {
 }
 
 #Preview {
-    CollectionView(catalog: mockCatalogs[0])
+    CatalogCollectionView(catalog: mockCatalogs[0])
 }
