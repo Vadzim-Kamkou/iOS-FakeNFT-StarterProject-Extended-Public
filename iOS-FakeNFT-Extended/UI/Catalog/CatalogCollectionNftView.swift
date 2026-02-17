@@ -7,26 +7,18 @@
 
 import SwiftUI
 
-
 struct CatalogCollectionNftView: View {
     
-    let collectionItem: CollectionItem
-    @State private var isFavouriteActive: Bool
-    @State private var isInCartActive: Bool
-    
-    init(collectionItem: CollectionItem) {
-        self.collectionItem = collectionItem
-        _isFavouriteActive = State(initialValue: collectionItem.isFavourite)
-        _isInCartActive = State(initialValue: collectionItem.isInCart)
-        
-    }
+    let nft: Nft
+    @State private var isFavouriteActive: Bool = false
+    @State private var isInCartActive: Bool = false
     
     private var favouriteImage: Image {
         isFavouriteActive ? Image(.favouritesIcon) : Image(.favouritesIconNo)
     }
     
-    var rating: Text {
-        switch collectionItem.ratings {
+    private var rating: Text {
+        switch nft.rating {
         case 1:
             Text(Image(.ratingStarActive)) +
             Text(Image(.ratingStarNoActive)) +
@@ -66,37 +58,61 @@ struct CatalogCollectionNftView: View {
         }
     }
     
-    
     private var cartImage: Image {
         isInCartActive ? Image(.cartNoActive) : Image(.cartActive)
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Image(collectionItem.imageName)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 108, height: 108)
-                .clipped()
-                .cornerRadius(12)
-                .overlay(
-                    Button {
-                        isFavouriteActive.toggle()
-                    } label: {
-                        favouriteImage
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 40, height: 40)
-                            .offset(x: 33, y: -33)
-                    }
-                        .buttonStyle(.plain)
-                )
+            AsyncImage(url: nft.firstImageURL) { phase in
+                switch phase {
+                case .empty:
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 108, height: 108)
+                        .overlay {
+                            ProgressView()
+                        }
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 108, height: 108)
+                        .clipped()
+                case .failure:
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 108, height: 108)
+                        .overlay {
+                            Image(systemName: "photo")
+                                .foregroundColor(.gray)
+                        }
+                @unknown default:
+                    EmptyView()
+                }
+            }
+            .cornerRadius(12)
+            .overlay(
+                Button {
+                    isFavouriteActive.toggle()
+                } label: {
+                    favouriteImage
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 40)
+                        .offset(x: 33, y: -33)
+                }
+                .buttonStyle(.plain)
+            )
+            
             rating
+            
             HStack {
-                VStack (alignment: .leading, spacing: 4) {
-                    Text("\(collectionItem.title)")
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(nft.name)
                         .font(.bodyBold)
-                    Text("\(collectionItem.price) \(collectionItem.currency)")
+                        .lineLimit(1)
+                    Text("\(String(format: "%.2f", nft.price)) ETH")
                         .font(.medium10)
                 }
                 Spacer()
@@ -109,10 +125,6 @@ struct CatalogCollectionNftView: View {
                         .frame(width: 40, height: 40)
                 }
                 .buttonStyle(.plain)
-                
-                
-                
-                
             }
         }
         .frame(width: 108, height: 192)
@@ -120,5 +132,15 @@ struct CatalogCollectionNftView: View {
 }
 
 #Preview {
-    CatalogCollectionNftView(collectionItem: mockCollection[0])
+    CatalogCollectionNftView(nft: Nft(
+        id: "test-id",
+        name: "Test NFT",
+        images: ["https://code.s3.yandex.net/Mobile/iOS/NFT/Beige/Ellsa/1.png"],
+        rating: 5,
+        description: "Test description",
+        price: 39.37,
+        author: "Test Author",
+        website: "https://test.com",
+        createdAt: "2023-09-27T23:48:21.462Z[GMT]"
+    ))
 }
