@@ -80,7 +80,6 @@ final class CatalogViewModel: ObservableObject {
                 size: pageSize
             )
             collections.append(contentsOf: newCollections)
-            applySorting()
             canLoadMore = newCollections.count == pageSize
         } catch {
             errorMessage = "Ошибка загрузки дополнительных коллекций"
