@@ -52,6 +52,7 @@ struct CatalogListView: View {
                         HStack {
                             Spacer()
                             ProgressView()
+                                .frame(width: 30, height: 30)
                             Spacer()
                         }
                         .listRowSeparator(.hidden)

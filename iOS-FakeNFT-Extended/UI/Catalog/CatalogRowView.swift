@@ -21,6 +21,7 @@ struct CatalogRowView: View {
                         .frame(height: 140)
                         .overlay {
                             ProgressView()
+                                .frame(width: 30, height: 30)
                         }
                 case .success(let image):
                     image

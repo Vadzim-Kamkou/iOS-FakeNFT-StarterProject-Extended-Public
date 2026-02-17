@@ -72,6 +72,7 @@ struct CatalogCollectionNftView: View {
                         .frame(width: 108, height: 108)
                         .overlay {
                             ProgressView()
+                                .frame(width: 30, height: 30)
                         }
                 case .success(let image):
                     image
