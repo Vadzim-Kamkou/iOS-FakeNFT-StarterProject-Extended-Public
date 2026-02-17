@@ -8,12 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0D466C432F39E5B8008CCFB8 /* CatalogListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D466C422F39E5AE008CCFB8 /* CatalogListView.swift */; };
-		0D466C452F3A2534008CCFB8 /* CatalogItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D466C442F3A2528008CCFB8 /* CatalogItem.swift */; };
-		0D466C472F3A2581008CCFB8 /* CatalogMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D466C462F3A2570008CCFB8 /* CatalogMocks.swift */; };
 		0D466C4A2F3A2901008CCFB8 /* CatalogCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D466C492F3A28FA008CCFB8 /* CatalogCollectionView.swift */; };
 		0D466C4D2F3A2927008CCFB8 /* CatalogCollectionNftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D466C4C2F3A291C008CCFB8 /* CatalogCollectionNftView.swift */; };
-		0D466C4F2F3A34A3008CCFB8 /* CollectionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D466C4E2F3A3491008CCFB8 /* CollectionItem.swift */; };
-		0D466C552F3B2172008CCFB8 /* CollectionMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D466C542F3B216A008CCFB8 /* CollectionMocks.swift */; };
 		0D466C572F3C7955008CCFB8 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D466C562F3C7940008CCFB8 /* WebView.swift */; };
 		0D466DEC2F4467D7008CCFB8 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D466DEB2F4467D5008CCFB8 /* Collection.swift */; };
 		0D466DEE2F44682A008CCFB8 /* CollectionsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D466DED2F446828008CCFB8 /* CollectionsRequest.swift */; };
@@ -77,12 +73,8 @@
 
 /* Begin PBXFileReference section */
 		0D466C422F39E5AE008CCFB8 /* CatalogListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogListView.swift; sourceTree = "<group>"; };
-		0D466C442F3A2528008CCFB8 /* CatalogItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogItem.swift; sourceTree = "<group>"; };
-		0D466C462F3A2570008CCFB8 /* CatalogMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogMocks.swift; sourceTree = "<group>"; };
 		0D466C492F3A28FA008CCFB8 /* CatalogCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogCollectionView.swift; sourceTree = "<group>"; };
 		0D466C4C2F3A291C008CCFB8 /* CatalogCollectionNftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogCollectionNftView.swift; sourceTree = "<group>"; };
-		0D466C4E2F3A3491008CCFB8 /* CollectionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionItem.swift; sourceTree = "<group>"; };
-		0D466C542F3B216A008CCFB8 /* CollectionMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionMocks.swift; sourceTree = "<group>"; };
 		0D466C562F3C7940008CCFB8 /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		0D466DEB2F4467D5008CCFB8 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		0D466DED2F446828008CCFB8 /* CollectionsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionsRequest.swift; sourceTree = "<group>"; };
@@ -267,10 +259,6 @@
 		ABC5E19E2C31F6C1002B4068 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				0D466C442F3A2528008CCFB8 /* CatalogItem.swift */,
-				0D466C4E2F3A3491008CCFB8 /* CollectionItem.swift */,
-				0D466C462F3A2570008CCFB8 /* CatalogMocks.swift */,
-				0D466C542F3B216A008CCFB8 /* CollectionMocks.swift */,
 				ABC5E19F2C31F6CB002B4068 /* Network */,
 			);
 			path = Models;
@@ -513,7 +501,6 @@
 				ABC5E1E62C320585002B4068 /* LinePageControl.swift in Sources */,
 				ABC5E1DD2C3204DC002B4068 /* CellsReusingUtils.swift in Sources */,
 				ABC5E1B52C31FC57002B4068 /* TabBarView.swift in Sources */,
-				0D466C552F3B2172008CCFB8 /* CollectionMocks.swift in Sources */,
 				ABC5E1E42C32055B002B4068 /* ErrorView.swift in Sources */,
 				ABC5E1A62C31F815002B4068 /* NetworkRequest.swift in Sources */,
 				0D466C572F3C7955008CCFB8 /* WebView.swift in Sources */,
@@ -525,14 +512,11 @@
 				ABC5E1A42C31F800002B4068 /* NetworkClient.swift in Sources */,
 				ABC5E1D32C320438002B4068 /* NftDetailAssembly.swift in Sources */,
 				ABC5E1A12C31F6D7002B4068 /* Nft.swift in Sources */,
-				0D466C472F3A2581008CCFB8 /* CatalogMocks.swift in Sources */,
 				0D466C432F39E5B8008CCFB8 /* CatalogListView.swift in Sources */,
 				ABC5E1AE2C31FB7F002B4068 /* NftByIdRequest.swift in Sources */,
 				ABC5E1DB2C3204CE002B4068 /* UIView+Constraints.swift in Sources */,
-				0D466C452F3A2534008CCFB8 /* CatalogItem.swift in Sources */,
 				0D466DEE2F44682A008CCFB8 /* CollectionsRequest.swift in Sources */,
 				0DB4BCF32F36358F003E620D /* CatalogViewModel.swift in Sources */,
-				0D466C4F2F3A34A3008CCFB8 /* CollectionItem.swift in Sources */,
 				ABC5E16C2C31F5AF002B4068 /* iOS_FakeNFT_ExtendedApp.swift in Sources */,
 				0D466DF22F446D14008CCFB8 /* CatalogCollectionViewModel.swift in Sources */,
 				0D466C4A2F3A2901008CCFB8 /* CatalogCollectionView.swift in Sources */,
