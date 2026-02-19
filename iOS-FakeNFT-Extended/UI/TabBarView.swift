@@ -4,9 +4,16 @@ struct TabBarView: View {
     
     @State private var selectedTab = 0
     @State private var stateCurt = false
-    @State var cartViewModel = CartNFTViewModel(nftService: MockNFTService())
+    
+    @State var cartViewModel: CartNFTViewModel
+    @State var paymentViewModel: PaymentViewModel
     
     init() {
+        let cartDataStore = CartDataStore()
+        let mockNFRService = MockNFTService()
+        cartViewModel = CartNFTViewModel(dataStore: cartDataStore, nftService: mockNFRService)
+        paymentViewModel = PaymentViewModel(dataStore: cartDataStore)
+        
         // Настройка цветов при инициализации
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -58,7 +65,7 @@ struct TabBarView: View {
                     }
                 }
                 .tag(1)
-            CartMainView(viewModel: cartViewModel)
+            CartMainView(viewModel: cartViewModel, paymentViewModel: paymentViewModel)
                 .onAppear {
                     stateCurt = true
                 }
