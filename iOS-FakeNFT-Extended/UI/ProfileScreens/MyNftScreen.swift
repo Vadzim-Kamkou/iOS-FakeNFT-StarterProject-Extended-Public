@@ -8,6 +8,7 @@ import SwiftUI
 
 struct MyNftScreen: View {
     @EnvironmentObject var viewModel: ProfileViewModel
+    @Environment(ServicesAssembly.self) private var services
     @State private var sortOption: SortOption = .none
     @State private var showSortDialog = false
     @Environment(\.dismiss) private var dismiss
@@ -27,7 +28,7 @@ struct MyNftScreen: View {
         case .none:
             return base
         case .price:
-            return base.sorted { nft1, nft2 in
+            return base.sorted { (nft1: NftId, nft2: NftId) -> Bool in
                 let price1 = doublePrice(from: nft1.price)
                 let price2 = doublePrice(from: nft2.price)
                 if price1 != price2 {
@@ -36,7 +37,7 @@ struct MyNftScreen: View {
                 return nft1.name < nft2.name
             }
         case .rating:
-            return base.sorted { nft1, nft2 in
+            return base.sorted { (nft1: NftId, nft2: NftId) -> Bool in
                 if nft1.rating != nft2.rating {
                     return nft1.rating > nft2.rating
                 }
@@ -103,6 +104,12 @@ struct MyNftScreen: View {
             }
             .navigationBarTitleDisplayMode(.inline)
         }
+        .task {
+            // 1. Загружаем профиль, чтобы получить ID всех NFT
+            await viewModel.loadProfile(using: services.profileService, id: "1")
+            // 2. Загружаем данные для каждого NFT по их ID
+            await viewModel.loadMyNfts(using: services.nftService)
+        }
         .confirmationDialog("Сортировка",
                             isPresented: $showSortDialog,
                             titleVisibility: .visible) {
@@ -122,15 +129,30 @@ struct MyNftScreen: View {
 
 #Preview {
     let viewModel = ProfileViewModel()
+    let networkClient = DefaultNetworkClient()
+    let nftStorage = NftStorageImpl()
     
     MyNftScreen()
         .environmentObject(viewModel)
+        .environment(ServicesAssembly(
+            networkClient: networkClient,
+            nftStorage: nftStorage
+        ))
 }
 
 #Preview("Пустой список") {
-    let viewModel = ProfileViewModel()
-    viewModel.allNfts = []
+    let viewModel: ProfileViewModel = {
+        let vm = ProfileViewModel()
+        vm.allNfts = []
+        return vm
+    }()
+    let networkClient = DefaultNetworkClient()
+    let nftStorage = NftStorageImpl()
     
-    return MyNftScreen()
+    MyNftScreen()
         .environmentObject(viewModel)
+        .environment(ServicesAssembly(
+            networkClient: networkClient,
+            nftStorage: nftStorage
+        ))
 }

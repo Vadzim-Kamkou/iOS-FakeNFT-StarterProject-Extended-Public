@@ -26,9 +26,8 @@ struct WebViewScreen: View {
                 Spacer()
             }
             .frame(height:42)
-            .padding(.leading, 9)
-            .padding(.top, 9)
-            .padding(.bottom, 9)
+            .padding([.leading, .vertical], 9)
+            
             .background(Color.white)
 
             WebView(url: url)

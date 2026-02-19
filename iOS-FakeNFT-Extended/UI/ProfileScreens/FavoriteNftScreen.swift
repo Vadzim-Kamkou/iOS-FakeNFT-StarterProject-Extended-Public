@@ -9,6 +9,7 @@ import SwiftUI
 struct FavoriteNftScreen: View {
     @EnvironmentObject var viewModel: ProfileViewModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(ServicesAssembly.self) private var services
     
     var body: some View {
         NavigationStack {
@@ -58,20 +59,39 @@ struct FavoriteNftScreen: View {
             }
             .navigationBarTitleDisplayMode(.inline)
         }
+        .task {
+            await viewModel.loadFavoriteNfts(using: services.nftService)
+        }
     }
 }
 
 #Preview {
     let viewModel = ProfileViewModel()
+    let networkClient = DefaultNetworkClient()
+    let nftStorage = NftStorageImpl()
     
     FavoriteNftScreen()
         .environmentObject(viewModel)
+        .environment(ServicesAssembly(
+            networkClient: networkClient,
+            nftStorage: nftStorage
+        ))
 }
 
 #Preview("Пустой список") {
-    let viewModel = ProfileViewModel()
-    viewModel.allNfts = []
+    let viewModel: ProfileViewModel = {
+        let vm = ProfileViewModel()
+        vm.allNfts = []
+        return vm
+    }()
+    let networkClient = DefaultNetworkClient()
+    let nftStorage = NftStorageImpl()
+    let services = ServicesAssembly(
+        networkClient: networkClient,
+        nftStorage: nftStorage
+    )
     
-    return FavoriteNftScreen()
+    FavoriteNftScreen()
         .environmentObject(viewModel)
+        .environment(services)
 }

@@ -9,6 +9,7 @@ import SwiftUI
 import Kingfisher
 
 struct ProfileScreen: View {
+    @Environment(ServicesAssembly.self) private var services
     @StateObject private var viewModel = ProfileViewModel()
     
     var body: some View {
@@ -90,12 +91,30 @@ struct ProfileScreen: View {
                     }
                 }
                 
+                if viewModel.isLoading {
+                    ProgressView()
+                        .padding()
+                }
+                
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .padding()
+                }
+                
                 Spacer()
             }
+        }
+        .task {
+            await viewModel.loadProfile(using: services.profileService, id: "1")
         }
     }
 }
 
 #Preview {
     ProfileScreen()
+        .environment(ServicesAssembly(
+            networkClient: DefaultNetworkClient(),
+            nftStorage: NftStorageImpl()
+        ))
 }

@@ -9,12 +9,13 @@ import Kingfisher
 
 struct FavoriteNftCell: View {
     @EnvironmentObject var viewModel: ProfileViewModel
+    @Environment(ServicesAssembly.self) private var services
     let nft: NftId
     
     var body: some View {
         HStack {
             ZStack(alignment: .topTrailing) {
-                if let url = URL(string: nft.logo) {
+                if let url = URL(string: nft.logoUrlString) {
                     KFImage(url)
                         .placeholder {
                             Image(systemName: "photo")
@@ -29,8 +30,8 @@ struct FavoriteNftCell: View {
                 }
                 
                 Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        viewModel.toggleLike(for: nft.id)
+                    Task {
+                        await viewModel.toggleLike(for: nft.id, using: services.profileService)
                     }
                 } label: {
                     Image(.likeActive) // Всегда активный лайк в избранном
@@ -45,6 +46,7 @@ struct FavoriteNftCell: View {
             VStack(alignment: .leading) {
                 Text(nft.name)
                     .font(.bodyBold)
+                    .lineLimit(1)
                     .padding(.bottom, 4)
                 
                 StarRatingView(rating: nft.rating)
@@ -55,23 +57,27 @@ struct FavoriteNftCell: View {
                     Text("ETH")
                 }
                 .font(.caption1)
+                .lineLimit(1)
             }
         }
     }
 }
-#Preview {
-    
-        FavoriteNftCell(nft:  NftId(
-            name: "Lion",
-            logo: "https://fivmagazine.com/wp-content/uploads/2022/04/nft-non-fungible-token-token-collection-bored-ape-yacht-club-example-army-monkey.jpg",
-            price: "1.25",
-            rating: 4,
-            creater: "William Martinez",
-            isLiked: true
-        ) )
-        
-        
-    
-    
-}
 
+#Preview {
+    let networkClient = DefaultNetworkClient()
+    let nftStorage = NftStorageImpl()
+    
+    FavoriteNftCell(nft:  NftId(
+        name: "Lion",
+        logoUrlString: "https://fivmagazine.com/wp-content/uploads/2022/04/nft-non-fungible-token-token-collection-bored-ape-yacht-club-example-army-monkey.jpg",
+        price: "1.25",
+        rating: 4,
+        creater: "William Martinez",
+        isLiked: true
+    ) )
+    .environmentObject(ProfileViewModel())
+    .environment(ServicesAssembly(
+        networkClient: networkClient,
+        nftStorage: nftStorage
+    ))
+}

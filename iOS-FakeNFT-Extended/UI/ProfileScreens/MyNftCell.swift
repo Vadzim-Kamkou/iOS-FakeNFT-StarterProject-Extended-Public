@@ -10,12 +10,13 @@ import Kingfisher
 
 struct MyNftCell: View {
     @EnvironmentObject var viewModel: ProfileViewModel
+    @Environment(ServicesAssembly.self) private var services
     let nft: NftId
     
     var body: some View {
         HStack(spacing: 0) {
             ZStack(alignment: .topTrailing) {
-                if let url = URL(string: nft.logo) {
+                if let url = URL(string: nft.logoUrlString) {
                     KFImage(url)
                         .placeholder {
                             Image(.nft)
@@ -35,8 +36,8 @@ struct MyNftCell: View {
                 }
                 
                 Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        viewModel.toggleLike(for: nft.id)
+                    Task {
+                        await viewModel.toggleLike(for: nft.id, using: services.profileService)
                     }
                 } label: {
                     Image(nft.isLiked ? .likeActive : .likeInactive)
@@ -50,6 +51,7 @@ struct MyNftCell: View {
             VStack(alignment: .leading) {
                 Text(nft.name)
                     .font(.bodyBold)
+                    .lineLimit(1)
                     .padding(.bottom, 4)
                 
                 StarRatingView(rating: nft.rating)
@@ -62,6 +64,7 @@ struct MyNftCell: View {
                     
                     Text(nft.creater)
                         .font(.caption2)
+                        .lineLimit(1)
                 }
             }
             .padding(.trailing, 39)
@@ -80,8 +83,7 @@ struct MyNftCell: View {
             
             Spacer()
         }
-        .padding(.leading, 16)
-        .padding(.vertical, 16)
+        .padding(16)
     }
 }
 struct StarRatingView: View {
@@ -118,14 +120,20 @@ struct StarRatingView: View {
 }
 
 #Preview {
+    let networkClient = DefaultNetworkClient()
+    let nftStorage = NftStorageImpl()
+    
     MyNftCell(nft:        NftId(
         name: "April",
-        logo: "https://fivmagazine.com/wp-content/uploads/2022/04/nft-non-fungible-token-token-collection-bored-ape-yacht-club-example-army-monkey.jpg",
+        logoUrlString: "https://fivmagazine.com/wp-content/uploads/2022/04/nft-non-fungible-token-token-collection-bored-ape-yacht-club-example-army-monkey.jpg",
         price: "1,78",
         rating: 4,
         creater: "Creator D",
         isLiked: true
     ) )
-    
-        
+    .environmentObject(ProfileViewModel())
+    .environment(ServicesAssembly(
+        networkClient: networkClient,
+        nftStorage: nftStorage
+    ))
 }

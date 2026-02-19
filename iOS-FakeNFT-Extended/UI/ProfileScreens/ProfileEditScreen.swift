@@ -11,6 +11,7 @@ import ProgressHUD
 struct EditProfileScreen: View {
     @EnvironmentObject var viewModel: ProfileViewModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(ServicesAssembly.self) private var services
     @State private var localName: String = ""
     @State private var localDescription: String = ""
     @State private var localWebsiteDisplay: String = ""
@@ -64,11 +65,20 @@ struct EditProfileScreen: View {
                 if hasChanges {
                     Button {
                         Task {
-                            ProgressHUD.animate()
-                            applyChanges()
-                            try? await Task.sleep(for: .seconds(1.5))
-                            try? await Task.sleep(for: .seconds(1.0))
-                            ProgressHUD.dismiss()
+                            let newName = localName != viewModel.name ? localName : nil
+                            let newDescription = localDescription != viewModel.description ? localDescription : nil
+                            let newWebsite = localWebsiteDisplay != viewModel.websiteDisplay ? localWebsiteDisplay : nil
+                            let newAvatar = localAvatarURL != viewModel.avatarURL ? localAvatarURL : nil
+                            
+                            await viewModel.updateProfile(
+                                using: services.profileService,
+                                id: "1",
+                                name: newName,
+                                description: newDescription,
+                                website: newWebsite,
+                                avatarURL: newAvatar
+                            )
+                            
                             await MainActor.run {
                                 dismiss()
                             }
@@ -80,11 +90,12 @@ struct EditProfileScreen: View {
                             .frame(maxWidth: .infinity)
                             .frame(height: 60)
                             .background(Color.primary)
-                            .cornerRadius(16)
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
                     }
                     .padding(.horizontal, 16)
                     .background(Color(UIColor.systemBackground))
                     .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .disabled(viewModel.isLoading)
                 } else {
                     Color.clear.frame(height: 20)
                 }
@@ -104,6 +115,7 @@ struct EditProfileScreen: View {
                             .font(.bodyBold)
                             .foregroundColor(Color.primary)
                     }
+                    .disabled(viewModel.isLoading)
                 }
             }
             .onAppear {
@@ -150,6 +162,7 @@ struct EditProfileScreen: View {
                 }
                 Button("Остаться", role: .cancel) {}
             }
+            .interactiveDismissDisabled(viewModel.isLoading)
         }
     }
     private var hasChanges: Bool {
@@ -159,12 +172,6 @@ struct EditProfileScreen: View {
         localDescription != viewModel.description ||
         localWebsiteDisplay != viewModel.websiteDisplay ||
         localAvatarURL != viewModel.avatarURL
-    }
-    private func applyChanges() {
-        viewModel.name = localName
-        viewModel.description = localDescription
-        viewModel.websiteDisplay = localWebsiteDisplay
-        viewModel.avatarURL = localAvatarURL
     }
     @ViewBuilder
     private func singleLineField(title: String, text: Binding<String>, keyboardType: UIKeyboardType = .default) -> some View {
@@ -201,7 +208,16 @@ struct EditProfileScreen: View {
     }
 }
 
-#Preview {
-    EditProfileScreen()
-        .environmentObject(ProfileViewModel())
-}
+//#Preview {
+//    let networkClient = DefaultNetworkClient()
+//    let nftStorage = NftStorageImpl()
+//    let profileService = ProfileServiceImpl(networkClient: networkClient)
+//    
+//    EditProfileScreen()
+//        .environmentObject(ProfileViewModel())
+//        .environment(ServicesAssembly(
+//            networkClient: networkClient,
+//            nftStorage: nftStorage,
+//            profileService: profileService
+//        ))
+//}
