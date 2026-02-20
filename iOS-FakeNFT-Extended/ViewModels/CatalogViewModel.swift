@@ -29,13 +29,13 @@ final class CatalogViewModel: ObservableObject {
     private var canLoadMore = true
     
     enum SortType: String, CaseIterable {
-        case byCount = "byCount"
         case byName = "byName"
+        case byCount = "byCount"
         
         var title: String {
             switch self {
-            case .byCount: return "По количеству NFT"
             case .byName: return "По названию"
+            case .byCount: return "По количеству NFT"
             }
         }
     }

@@ -26,13 +26,17 @@ struct CatalogView: View {
                             }
                         }
                     }
-                    .confirmationDialog("Сортировка", isPresented: $showSortMenu) {
+                    .confirmationDialog(
+                        "Сортировка",
+                        isPresented: $showSortMenu,
+                        titleVisibility: .visible
+                    ) {
                         ForEach(CatalogViewModel.SortType.allCases, id: \.self) { sortType in
                             Button(sortType.title) {
                                 viewModel.changeSortType(sortType)
                             }
                         }
-                        Button("Отмена", role: .cancel) {}
+                        Button("Закрыть", role: .cancel) {}
                     }
             } else {
                 ProgressView()
