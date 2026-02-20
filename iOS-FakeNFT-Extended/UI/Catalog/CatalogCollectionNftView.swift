@@ -17,44 +17,13 @@ struct CatalogCollectionNftView: View {
         isFavouriteActive ? Image(.favouritesIcon) : Image(.favouritesIconNo)
     }
     
-    private var rating: Text {
-        switch nft.rating {
-        case 1:
-            Text(Image(.ratingStarActive)) +
-            Text(Image(.ratingStarNoActive)) +
-            Text(Image(.ratingStarNoActive)) +
-            Text(Image(.ratingStarNoActive)) +
-            Text(Image(.ratingStarNoActive))
-        case 2:
-            Text(Image(.ratingStarActive)) +
-            Text(Image(.ratingStarActive)) +
-            Text(Image(.ratingStarNoActive)) +
-            Text(Image(.ratingStarNoActive)) +
-            Text(Image(.ratingStarNoActive))
-        case 3:
-            Text(Image(.ratingStarActive)) +
-            Text(Image(.ratingStarActive)) +
-            Text(Image(.ratingStarActive)) +
-            Text(Image(.ratingStarNoActive)) +
-            Text(Image(.ratingStarNoActive))
-        case 4:
-            Text(Image(.ratingStarActive)) +
-            Text(Image(.ratingStarActive)) +
-            Text(Image(.ratingStarActive)) +
-            Text(Image(.ratingStarActive)) +
-            Text(Image(.ratingStarNoActive))
-        case 5:
-            Text(Image(.ratingStarActive)) +
-            Text(Image(.ratingStarActive)) +
-            Text(Image(.ratingStarActive)) +
-            Text(Image(.ratingStarActive)) +
-            Text(Image(.ratingStarActive))
-        default:
-            Text(Image(.ratingStarNoActive)) +
-            Text(Image(.ratingStarNoActive)) +
-            Text(Image(.ratingStarNoActive)) +
-            Text(Image(.ratingStarNoActive)) +
-            Text(Image(.ratingStarNoActive))
+    private var ratingView: some View {
+        HStack(spacing: 2) {
+            ForEach(1...5, id: \.self) { index in
+                Image(index <= nft.rating ? .ratingStarActive : .ratingStarNoActive)
+                    .resizable()
+                    .frame(width: 12, height: 12)
+            }
         }
     }
     
@@ -106,7 +75,7 @@ struct CatalogCollectionNftView: View {
                 .buttonStyle(.plain)
             )
             
-            rating
+            ratingView
             
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
