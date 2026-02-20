@@ -10,11 +10,15 @@ import SwiftUI
 struct CatalogCollectionNftView: View {
     
     let nft: Nft
-    @State private var isFavouriteActive: Bool = false
-    @State private var isInCartActive: Bool = false
+    @StateObject private var viewModel: CatalogCollectionNftViewModel
+
+    init(nft: Nft) {
+        self.nft = nft
+        self._viewModel = StateObject(wrappedValue: CatalogCollectionNftViewModel(nft: nft))
+    }
     
     private var favouriteImage: Image {
-        isFavouriteActive ? Image(.favouritesIcon) : Image(.favouritesIconNo)
+        viewModel.isFavouriteActive ? Image(.favouritesIcon) : Image(.favouritesIconNo)
     }
     
     private var ratingView: some View {
@@ -28,7 +32,7 @@ struct CatalogCollectionNftView: View {
     }
     
     private var cartImage: Image {
-        isInCartActive ? Image(.cartNoActive) : Image(.cartActive)
+        viewModel.isInCartActive ? Image(.cartNoActive) : Image(.cartActive)
     }
     
     var body: some View {
@@ -64,7 +68,7 @@ struct CatalogCollectionNftView: View {
             .cornerRadius(12)
             .overlay(
                 Button {
-                    isFavouriteActive.toggle()
+                    viewModel.toggleFavourite()
                 } label: {
                     favouriteImage
                         .resizable()
@@ -87,7 +91,7 @@ struct CatalogCollectionNftView: View {
                 }
                 Spacer()
                 Button {
-                    isInCartActive.toggle()
+                    viewModel.toggleCart()
                 } label: {
                     cartImage
                         .resizable()
