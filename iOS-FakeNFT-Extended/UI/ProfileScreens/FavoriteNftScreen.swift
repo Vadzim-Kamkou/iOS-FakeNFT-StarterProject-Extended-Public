@@ -55,6 +55,7 @@ struct FavoriteNftScreen: View {
                     Text("Избранные NFT")
                         .font(.bodyBold)
                         .foregroundColor(.primary)
+                        .opacity(viewModel.favoriteNfts.isEmpty ? 0 : 1)
                 }
             }
             .navigationBarTitleDisplayMode(.inline)

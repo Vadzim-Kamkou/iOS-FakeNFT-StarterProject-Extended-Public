@@ -9,6 +9,9 @@ import Foundation
 import Combine
 import ProgressHUD
 
+enum SortOption {
+    case none, price, rating, name
+}
 
 final class ProfileViewModel: ObservableObject {
     @Published var name: String
@@ -25,8 +28,21 @@ final class ProfileViewModel: ObservableObject {
     @Published var likeIds: [String]
     @Published var favoriteNfts: [NftId] = []
     
+    // MARK: - Edit Profile State
+    @Published var editName: String = ""
+    @Published var editDescription: String = ""
+    @Published var editWebsite: String = ""
+    @Published var editAvatar: String = ""
+    
+    // MARK: - My NFT Sort State
+    @Published var myNftSortOption: SortOption = .none
+    
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
+    
+    var allNftsList: [NftId] {
+        allNfts
+    }
     
     init() {
         self.name = ""
@@ -40,21 +56,70 @@ final class ProfileViewModel: ObservableObject {
         self.favoriteNftCount = 0
     }
     
+    var sortedMyNfts: [NftId] {
+        let base = allNfts
+        
+        switch myNftSortOption {
+        case .none:
+            return base
+        case .price:
+            return base.sorted {
+                let price1 = doublePrice(from: $0.price)
+                let price2 = doublePrice(from: $1.price)
+                if price1 != price2 {
+                    return price1 > price2
+                }
+                return $0.name < $1.name
+            }
+        case .rating:
+            return base.sorted {
+                if $0.rating != $1.rating {
+                    return $0.rating > $1.rating
+                }
+                return $0.name < $1.name
+            }
+        case .name:
+            return base.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        }
+    }
+    
+    var hasChanges: Bool {
+        editName != name ||
+        editDescription != description ||
+        editWebsite != websiteDisplay ||
+        editAvatar != avatarURL
+    }
+    
+    @MainActor
+    func startEditing() {
+        editName = name
+        editDescription = description
+        editWebsite = websiteDisplay
+        editAvatar = avatarURL
+    }
+    
+    @MainActor
+    func saveEditingProfile(using service: ProfileService) async {
+        let newName = editName != name ? editName : nil
+        let newDescription = editDescription != description ? editDescription : nil
+        let newWebsite = editWebsite != websiteDisplay ? editWebsite : nil
+        let newAvatar = editAvatar != avatarURL ? editAvatar : nil
+        
+        await updateProfile(using: service, id: "1", name: newName, description: newDescription, website: newWebsite, avatarURL: newAvatar)
+    }
+    
     @MainActor
     func toggleLike(for nftId: UUID, using service: ProfileService) async {
-        // 1. Находим NFT для лайка/дизлайка в любом из списков
         guard let nft = (allNfts.first { $0.id == nftId } ?? favoriteNfts.first { $0.id == nftId }) else {
             print("Error: NFT with id \(nftId) not found to toggle like.")
             return
         }
         guard let remoteId = nft.remoteId else { return }
 
-        // 2. Определяем, лайкаем мы или дизлайкаем
         let isCurrentlyLiked = self.likeIds.contains(remoteId)
 
         ProgressHUD.animate()
 
-        // 3. Готовим новый список лайков для отправки на сервер
         let newLikes: [String]
         if isCurrentlyLiked {
             newLikes = self.likeIds.filter { $0 != remoteId }
@@ -63,7 +128,6 @@ final class ProfileViewModel: ObservableObject {
         }
 
         do {
-            // 4. Отправляем запрос на сервер
             let profile = try await service.updateProfile(
                 id: "1",
                 name: nil,
@@ -74,15 +138,11 @@ final class ProfileViewModel: ObservableObject {
                 likes: newLikes
             )
 
-            // 5. Обновляем локальное состояние из ответа сервера
             self.likeIds = profile.likeIds
 
-            // Обновляем статус isLiked в общем списке NFT
             if let index = allNfts.firstIndex(where: { $0.id == nftId }) {
                 allNfts[index].isLiked = !isCurrentlyLiked
             }
-
-            // Обновляем список избранных NFT
             if isCurrentlyLiked {
                 favoriteNfts.removeAll { $0.remoteId == remoteId }
             } else {
@@ -100,10 +160,6 @@ final class ProfileViewModel: ObservableObject {
         }
     }
     
-    var allNftsList: [NftId] {
-        allNfts
-    }
-        
     @MainActor
     func loadProfile(using service: ProfileService, id: String) async {
         isLoading = true
@@ -146,7 +202,6 @@ final class ProfileViewModel: ObservableObject {
             return
         }
 
-        // Используем TaskGroup для параллельной загрузки всех NFT
         allNfts = await withTaskGroup(of: NftId?.self, returning: [NftId].self) { group in
             for id in nftIds {
                 group.addTask {
@@ -188,7 +243,6 @@ final class ProfileViewModel: ObservableObject {
             return
         }
 
-        // Используем TaskGroup для параллельной загрузки
         favoriteNfts = await withTaskGroup(of: NftId?.self, returning: [NftId].self) { group in
             for id in likeIds {
                 group.addTask {
@@ -253,5 +307,9 @@ final class ProfileViewModel: ObservableObject {
             errorMessage = "Ошибка обновления профиля"
             print("Profile update error:", error)
         }
+    }
+    
+    private func doublePrice(from string: String) -> Double {
+        Double(string.replacingOccurrences(of: ",", with: ".")) ?? 0.0
     }
 }

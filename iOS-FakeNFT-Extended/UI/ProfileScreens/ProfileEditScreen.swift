@@ -12,11 +12,6 @@ struct EditProfileScreen: View {
     @EnvironmentObject var viewModel: ProfileViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(ServicesAssembly.self) private var services
-    @State private var localName: String = ""
-    @State private var localDescription: String = ""
-    @State private var localWebsiteDisplay: String = ""
-    @State private var localAvatarURL: String = ""
-    @State private var isFirstAppear = true
     @State private var showingPhotoDialog = false
     @State private var showingPhotoURLAlert = false
     @State private var newPhotoURLText: String = "https://"
@@ -27,7 +22,7 @@ struct EditProfileScreen: View {
             ScrollView {
                 VStack(spacing: 24) {
                     ZStack(alignment: .bottomTrailing) {
-                        KFImage(URL(string: localAvatarURL))
+                        KFImage(URL(string: viewModel.editAvatar))
                             .placeholder {
                                 Image(systemName: "person.circle.fill")
                                     .font(.system(size: 100))
@@ -52,9 +47,9 @@ struct EditProfileScreen: View {
                     
                     // Форма
                     VStack(alignment: .leading, spacing: 20) {
-                        singleLineField(title: "Имя", text: $localName)
-                        multiLineField(title: "Описание", text: $localDescription)
-                        singleLineField(title: "Сайт", text: $localWebsiteDisplay, keyboardType: .URL)
+                        singleLineField(title: "Имя", text: $viewModel.editName)
+                        multiLineField(title: "Описание", text: $viewModel.editDescription)
+                        singleLineField(title: "Сайт", text: $viewModel.editWebsite, keyboardType: .URL)
                     }
                     .padding(.horizontal, 16)
                     
@@ -62,22 +57,10 @@ struct EditProfileScreen: View {
                 }
             }
             .safeAreaInset(edge: .bottom) {
-                if hasChanges {
+                if viewModel.hasChanges {
                     Button {
                         Task {
-                            let newName = localName != viewModel.name ? localName : nil
-                            let newDescription = localDescription != viewModel.description ? localDescription : nil
-                            let newWebsite = localWebsiteDisplay != viewModel.websiteDisplay ? localWebsiteDisplay : nil
-                            let newAvatar = localAvatarURL != viewModel.avatarURL ? localAvatarURL : nil
-                            
-                            await viewModel.updateProfile(
-                                using: services.profileService,
-                                id: "1",
-                                name: newName,
-                                description: newDescription,
-                                website: newWebsite,
-                                avatarURL: newAvatar
-                            )
+                            await viewModel.saveEditingProfile(using: services.profileService)
                             
                             await MainActor.run {
                                 dismiss()
@@ -100,12 +83,12 @@ struct EditProfileScreen: View {
                     Color.clear.frame(height: 20)
                 }
             }
-            .animation(.easeInOut(duration: 0.3), value: hasChanges)
+            .animation(.easeInOut(duration: 0.3), value: viewModel.hasChanges)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
-                        if hasChanges {
+                        if viewModel.hasChanges {
                             showingExitAlert = true
                         } else {
                             dismiss()
@@ -119,20 +102,14 @@ struct EditProfileScreen: View {
                 }
             }
             .onAppear {
-                if isFirstAppear {
-                    localName = viewModel.name
-                    localDescription = viewModel.description
-                    localWebsiteDisplay = viewModel.websiteDisplay
-                    localAvatarURL = viewModel.avatarURL
-                    isFirstAppear = false
-                }
+                viewModel.startEditing()
             }
             .confirmationDialog("Фото профиля", isPresented: $showingPhotoDialog, titleVisibility: .visible) {
                 Button("Изменить фото") {
                     showingPhotoURLAlert = true
                 }
                 Button("Удалить фото", role: .destructive) {
-                    localAvatarURL = ""
+                    viewModel.editAvatar = ""
                 }
                 Button("Отмена", role: .cancel) {}
             }
@@ -147,31 +124,21 @@ struct EditProfileScreen: View {
                 }
                 Button("Сохранить") {
                     if let _ = URL(string: newPhotoURLText), !newPhotoURLText.isEmpty {
-                        localAvatarURL = newPhotoURLText
+                        viewModel.editAvatar = newPhotoURLText
                     }
                     newPhotoURLText = "https://"
                 }
-            } message: {
-                Text("Введите прямую ссылку на изображение")
             }
             
-            // Алерт по центру для выхода без сохранения
             .alert("Уверены,\n что хотите выйти?", isPresented: $showingExitAlert) {
-                Button("Выйти") {
+                Button("Остаться") {}
+                Button("Выйти", role: .cancel) {
                     dismiss()
                 }
-                Button("Остаться", role: .cancel) {}
+                
             }
             .interactiveDismissDisabled(viewModel.isLoading)
         }
-    }
-    private var hasChanges: Bool {
-        guard !isFirstAppear else { return false }
-        
-        return localName != viewModel.name ||
-        localDescription != viewModel.description ||
-        localWebsiteDisplay != viewModel.websiteDisplay ||
-        localAvatarURL != viewModel.avatarURL
     }
     @ViewBuilder
     private func singleLineField(title: String, text: Binding<String>, keyboardType: UIKeyboardType = .default) -> some View {
