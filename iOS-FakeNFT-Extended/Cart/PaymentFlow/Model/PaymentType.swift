@@ -8,12 +8,12 @@
 struct PaymentType {
     var imageName: String
     var type: String
-    var shotForm: String
+    var shortForm: String
     
     init(crypto: Crypto) {
         self.imageName = crypto.rawValue
         self.type = crypto.rawValue
-        self.shotForm = crypto.shortForm
+        self.shortForm = crypto.shortForm
     }
 }
 

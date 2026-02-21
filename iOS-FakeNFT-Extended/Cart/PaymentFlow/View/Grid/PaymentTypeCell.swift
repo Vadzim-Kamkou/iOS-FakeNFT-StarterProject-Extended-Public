@@ -24,7 +24,7 @@ struct PaymentTypeCell:View {
                 Text(element.type)
                     .font(.caption2)
                     .foregroundStyle(.text)
-                Text(element.shotForm)
+                Text(element.shortForm)
                     .font(.caption2)
                     .foregroundStyle(.greenUniversal)
             }
