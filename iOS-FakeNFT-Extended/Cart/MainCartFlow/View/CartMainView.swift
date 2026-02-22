@@ -8,8 +8,10 @@ import ProgressHUD
 import SwiftUI
 
 struct CartMainView: View {
+    
     @State private var path: [String] = []
     @Bindable var viewModel: CartNFTViewModel
+    @Bindable var paymentViewModel: PaymentViewModel
     
     var body: some View {
         NavigationStack(path: $path) {
@@ -17,24 +19,41 @@ struct CartMainView: View {
             ZStack {
                 Color.backgroundForView.ignoresSafeArea()
                 if viewModel.NFTArrayIsEmpty {
-                    EmptyCartView
+                    emptyCartView
                 } else {
                     mainCartView
                         .fullScreenCover(isPresented: $viewModel.isShowingDeleteConfirmation) {
                             DeleteConfirmationView(viewModel: viewModel)
                         }
+                        .fullScreenCover(isPresented: $viewModel.isHiddenFilter) {
+                            CartFilterView(viewModel: viewModel)
+                                .presentationBackground(.clear)
+                        }
+                    UnSuccessView(viewModel: viewModel)
+                        .opacity(viewModel.cartScreenState == .UnSuccess ? 1 : 0)
                 }
             }
-            .withDestination(path: $path)
+            .progressHUD()
+            .withDestination(path: $path, paymentViewModel: paymentViewModel)
         }
         .onAppear {
             Task {
-                if viewModel.NFTArrayIsEmpty {
-                    ProgressHUD.animate()
-                    try? await Task.sleep(nanoseconds: 1_500_000_000) // временно для теста ProgressHUD
-                    await viewModel.createMocksNFTArray()
-                    ProgressHUD.dismiss()
+                if !viewModel.NFTArrayIsLoaded {
+                    await viewModel.loadNFT()
                 }
+            }
+        }
+        .onChange(of: viewModel.cartScreenState) { _, newState in
+            switch newState {
+            case .Loading:
+                ProgressHUD.animate()
+            case .Unused, .UnSuccess, .Success:
+                ProgressHUD.dismiss()
+            }
+        }
+        .onDisappear {
+            Task {
+                viewModel.changeScreenState(by: .Unused)
             }
         }
     }
@@ -47,7 +66,7 @@ struct CartMainView: View {
         }
     }
     
-    private var EmptyCartView: some View {
+    private var emptyCartView: some View {
         VStack(spacing: 0) {
             Text("The cart is empty")
                 .font(.bodyBold)
@@ -60,7 +79,7 @@ struct CartMainView: View {
         HStack(spacing: 0) {
             Spacer()
             Button {
-                print("[CartMainView]: filterButton - Фильтруем данные")
+                viewModel.tapOnFilterButton()
             } label: {
                 Image(.sortButton)
                     .resizable()
@@ -81,7 +100,11 @@ struct CartMainView: View {
                     .font(.bodyBold)
                     .foregroundStyle(.greenUniversal)
             }
-            ActionButton(title: "For payment", isBoldTextButton: true, cornerRadius: 16, textColor: .white) {
+            ActionButton(title: "For payment",
+                         verticalPadding: 11,
+                         isBoldTextButton: true,
+                         cornerRadius: 16,
+                         textColor: .white) {
                 path.append("Payment")
             }
         }
@@ -97,7 +120,8 @@ struct CartMainView: View {
 }
 
 #Preview {
-    @Previewable @State var viewModel = CartNFTViewModel(nftService: MockNFTService())
+    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), nftService: MockNFTService())
+    let paymentViewModel = PaymentViewModel(dataStore: CartDataStore())
     ZStack {
         Color.clear
             .background(.backgroundForView)
@@ -110,7 +134,7 @@ struct CartMainView: View {
                 .tabItem {
                     Label("Каталог", systemImage: "square.grid.2x2")
                 }
-            CartMainView(viewModel: viewModel)
+            CartMainView(viewModel: viewModel, paymentViewModel: paymentViewModel)
                 .tabItem {
                     Label("Корзина", systemImage: "cart")
                 }
@@ -120,15 +144,17 @@ struct CartMainView: View {
 }
 
 #Preview("Russian") {
-    @Previewable @State var viewModel = CartNFTViewModel(nftService: MockNFTService())
+    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), nftService: MockNFTService())
+    let paymentViewModel = PaymentViewModel(dataStore: CartDataStore())
     
-    CartMainView(viewModel: viewModel)
+    CartMainView(viewModel: viewModel, paymentViewModel: paymentViewModel)
         .environment(\.locale, .init(identifier: "ru"))
 }
 
 #Preview("English") {
-    @Previewable @State var viewModel = CartNFTViewModel(nftService: MockNFTService())
+    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), nftService: MockNFTService())
+    let paymentViewModel = PaymentViewModel(dataStore: CartDataStore())
     
-    CartMainView(viewModel: viewModel)
+    CartMainView(viewModel: viewModel, paymentViewModel: paymentViewModel)
         .environment(\.locale, .init(identifier: "en"))
 }

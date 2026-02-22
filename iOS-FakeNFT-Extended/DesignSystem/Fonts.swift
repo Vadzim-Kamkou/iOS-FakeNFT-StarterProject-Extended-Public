@@ -5,6 +5,7 @@ extension Font {
     static let headline2 = Font.system(size: 28, weight: .bold)
     static let headline3 = Font.system(size: 22, weight: .bold)
     static let headline4 = Font.system(size: 20, weight: .bold)
+    static let headline5 = Font.system(size: 20, weight: .regular)
     
     static let bodyRegular = Font.system(size: 17, weight: .regular)
     static let bodyBold = Font.system(size: 17, weight: .bold)

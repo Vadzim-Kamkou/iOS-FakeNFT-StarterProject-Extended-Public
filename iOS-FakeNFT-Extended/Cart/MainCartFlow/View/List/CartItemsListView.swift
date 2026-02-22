@@ -11,7 +11,7 @@ struct CartItemsListView: View {
     
     var body: some View {
         List() {
-            ForEach(viewModel.NFTArray) { nft in
+            ForEach(viewModel.NFTArray ?? []) { nft in
                 Section {
                     CartCellView(viewModel: viewModel, nft: nft)
                         .listRowSeparator(.hidden)
@@ -26,7 +26,7 @@ struct CartItemsListView: View {
 }
 
 #Preview {
-    @Previewable @State var viewModel = CartNFTViewModel(nftService: MockNFTService())
+    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), nftService: MockNFTService())
     
     ZStack {
         Color.clear

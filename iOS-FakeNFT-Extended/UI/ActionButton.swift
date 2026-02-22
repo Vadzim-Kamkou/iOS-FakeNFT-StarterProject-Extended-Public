@@ -14,6 +14,7 @@ enum ButtonColorStyle {
 
 struct ActionButton: View {
     let title: LocalizedStringKey
+    let verticalPadding: CGFloat
     let isBoldTextButton: Bool
     let cornerRadius: CGFloat
     let textColor: ButtonColorStyle
@@ -26,7 +27,7 @@ struct ActionButton: View {
             Text(title)
                 .foregroundStyle(textColor == .white ? .buttonText : .removeButton)
                 .font(isBoldTextButton ? .bodyBold : .bodyRegular)
-                .padding(.vertical, 11)
+                .padding(.vertical, verticalPadding)
                 .frame(maxWidth: .infinity)
                 .background(.buttonBackground)
                 .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
@@ -38,15 +39,14 @@ struct ActionButton: View {
     ZStack {
         Color.clear
             .background(.backgroundForView)
-
+        
         VStack {
-            ActionButton(title: "К оплате", isBoldTextButton: true, cornerRadius: 16, textColor: .white) {
+            ActionButton(title: "К оплате", verticalPadding: 11, isBoldTextButton: true, cornerRadius: 16, textColor: .white) {
                 print("Нажата")}
-    
-            ActionButton(title: "Удалить", isBoldTextButton: false, cornerRadius: 12, textColor: .red) {
+            
+            ActionButton(title: "Удалить", verticalPadding: 11, isBoldTextButton: false, cornerRadius: 12, textColor: .red) {
                 print("Нажата")}
         }
         .padding(20)
     }
-     
 }

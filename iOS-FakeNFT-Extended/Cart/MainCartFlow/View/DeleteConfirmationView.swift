@@ -25,12 +25,11 @@ struct DeleteConfirmationView: View {
                     .font(.caption2)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: 180)
-                    .frame(maxWidth: .infinity)
                 HStack(spacing: 8) {
-                    ActionButton(title: "Remove", isBoldTextButton: false, cornerRadius: 12, textColor: .red) {
+                    ActionButton(title: "Remove", verticalPadding: 11, isBoldTextButton: false, cornerRadius: 12, textColor: .red) {
                         viewModel.confirmDeletion(true)
                     }
-                    ActionButton(title: "Cancel", isBoldTextButton: false, cornerRadius: 12, textColor: .white) {
+                    ActionButton(title: "Back", verticalPadding: 11, isBoldTextButton: false, cornerRadius: 12, textColor: .white) {
                         viewModel.confirmDeletion(false)
                     }
                 }
@@ -44,7 +43,7 @@ struct DeleteConfirmationView: View {
 }
 
 #Preview {
-    @Previewable @State var viewModel = CartNFTViewModel(nftService: MockNFTService())
+    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), nftService: MockNFTService())
     
     ZStack {
         Color.clear

@@ -20,13 +20,12 @@ struct CartCellView:View {
     }
     
     private var removeButton: some View {
-        Button {
-            viewModel.removeButtonTapped(for: nft)
-        } label: {
-            Image(.removeNFT)
-                .resizable()
-                .frame(width: 40, height: 40)
-        }
+        Image(.removeNFT)
+            .resizable()
+            .frame(width: 40, height: 40)
+            .onTapGesture {
+                viewModel.removeButtonTapped(for: nft)
+            }
     }
     
     private var cartItemInfo: some View {
@@ -59,8 +58,8 @@ struct CartCellView:View {
     
     private var starRatingView: some View {
         HStack {
-            ForEach(1..<6) { i in
-                if i <= nft.countStars {
+            ForEach(1..<6) { hasNFTStars in
+                if hasNFTStars <= nft.countStars {
                     Image(.activeStar)
                         .resizable()
                         .frame(width: 12, height: 12)
@@ -75,7 +74,7 @@ struct CartCellView:View {
 }
 
 #Preview {
-    @Previewable @State var viewModel = CartNFTViewModel(nftService: MockNFTService())
+    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), nftService: MockNFTService())
     
     ZStack {
         Color.clear
