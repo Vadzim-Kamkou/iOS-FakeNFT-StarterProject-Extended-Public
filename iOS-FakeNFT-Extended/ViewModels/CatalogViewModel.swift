@@ -25,7 +25,7 @@ final class CatalogViewModel: ObservableObject {
     
     private let collectionService: CollectionService
     private var currentPage = 0
-    private let pageSize = 5
+    private let pageSize = 10
     private var canLoadMore = true
     
     enum SortType: String, CaseIterable {
@@ -80,6 +80,7 @@ final class CatalogViewModel: ObservableObject {
                 size: pageSize
             )
             collections.append(contentsOf: newCollections)
+            applySorting()
             canLoadMore = newCollections.count == pageSize
         } catch {
             errorMessage = "Ошибка загрузки дополнительных коллекций"
