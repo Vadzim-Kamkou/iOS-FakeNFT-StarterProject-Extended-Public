@@ -5,23 +5,33 @@
 //  Created by Владимир on 11.02.2026.
 //
 import Foundation
+import Combine
+import Logging
 
+@MainActor
 @Observable
 final class CartNFTViewModel {
     
     // MARK: - Dependencies
     private let dataStore: CartDataStore
-    private let nftService: NFTServiceProtocol
+    private let cartService: CartService
+    private let filterStorage = FilterUserDefaults()
     
     // MARK: - State Properties
     private(set) var NFTArray: [CartNFTModel]? = nil
     private var nftToRemove: CartNFTModel? = nil
+    private var cancelLables = Set<AnyCancellable>()
     
     var cartScreenState: ScreenState = .Unused
     var isShowingDeleteConfirmation = false
     var isHiddenFilter = false
-    
     var NFTArrayIsLoaded: Bool { NFTArray != nil }
+    
+    var nftToRemoveImageName: String {
+        guard let nftToRemove else { return "" }
+        return nftToRemove.imageName
+    }
+    
     var NFTArrayIsEmpty : Bool {
         guard let NFTArray, NFTArray.isEmpty else { return false }
         return true
@@ -32,26 +42,57 @@ final class CartNFTViewModel {
         return NFTArray.count
     }
     
-    init(dataStore: CartDataStore, nftService: NFTServiceProtocol) {
-        self.nftService = nftService
+    init(dataStore: CartDataStore, cartService: CartService) {
+        self.cartService = cartService
         self.dataStore = dataStore
+        addSubscribing()
     }
     
     // MARK: - Data Loading
-    func loadNFT() async {
-        cartScreenState = .Loading
-        try? await Task.sleep(nanoseconds: 1_500_000_000) // временно для теста ProgressHUD
-        await createMocksNFTArray()
-        cartScreenState = .Unused // менять для проверки разных состояний
+    private func updateLocal(array: CartArrayModel) async -> [NftForCartModel] {
+        await withTaskGroup(of: NftForCartModel?.self) { group in
+            for id in array.nfts {
+                group.addTask { [cartService] in
+                    try? await cartService.loadNftForCart(id: id)
+                }
+            }
+            return await group.reduce(into: []) { $0 += [$1].compactMap { $0 } }
+        }
     }
     
-    func createMocksNFTArray() async {
+    func loadNFT() async {
+        cartScreenState = .Loading
+        
         do {
-            NFTArray = try await nftService.fetchNFTForCart()
-            dataStore.updateNFT(totalPrice: cartNFTTotalPrice)
+            let nftArray = try await cartService.loadCartArray()
+            let localArray = await updateLocal(array: nftArray)
+            let convertToNftForCart = convert(array: localArray)
+            
+            NFTArray = convertToNftForCart
+            
+            if let actualFilterType = filterFromStorage() {
+                filter(by: actualFilterType)
+            }
+            
+            updateDataStore(new: convertToNftForCart)
+            cartScreenState = .Unused
         } catch {
             cartScreenState = .UnSuccess
-            print("[CartNFTViewModel /createMocksNFTArray]: Failed to load items cartScreenState -> \(cartScreenState)")
+            Logger.shared.info("createMocksNFTArray: Ошибка при загрузке, cartScreenState -> \(cartScreenState)")
+        }
+    }
+    
+    func reloadNFTArray() async {
+        do {
+            let _ = await remove(newArray: [])
+            let nftArray = try await cartService.loadCartArray()
+            let localArray = await updateLocal(array: nftArray)
+            let convertToNftForCart = convert(array: localArray)
+            
+            NFTArray = convertToNftForCart
+            updateDataStore(new: convertToNftForCart)
+        } catch {
+            Logger.shared.info("reloadNFTArray: Не удалось удалить данные")
         }
     }
     
@@ -77,13 +118,32 @@ extension CartNFTViewModel {
         isShowingDeleteConfirmation = true
     }
     
-    func confirmDeletion(_ confirm: Bool) {
+    func confirmDeletion(_ confirm: Bool) async {
         if let nftToRemove, let oldArray = NFTArray, confirm {
+            
+            cartScreenState = .Loading
+            
             let arrayForUpdating = oldArray.filter { $0.id != nftToRemove.id }
-            NFTArray = arrayForUpdating
-            dataStore.updateNFT(totalPrice: cartNFTTotalPrice)
+            let canRemove = await remove(newArray: arrayForUpdating)
+            
+            if canRemove {
+                cartScreenState = .Unused
+                NFTArray = arrayForUpdating
+                updateDataStore(new: arrayForUpdating)
+            } else {
+                cartScreenState = .UnSuccess
+            }
         }
         reuseRemovingState()
+    }
+    
+    private func remove(newArray: [CartNFTModel]) async -> Bool {
+        
+        if let _ = try? await cartService.updateCart(new: CartArrayModel(nfts: newArray.map({ $0.id}))) {
+            return true
+        } else {
+            return false
+        }
     }
     
     private func reuseRemovingState() {
@@ -98,19 +158,35 @@ extension CartNFTViewModel {
         isHiddenFilter.toggle()
     }
     
-    func filterBy(_ value: SortVariation ) {
+    func tapOnFilterButton(_ value: SortVariation ) {
         tapOnFilterButton()
-        
+        filter(by: value)
+    }
+    
+    func filter(by value:SortVariation) {
         switch value {
-        case .byName: NFTArray = NFTArray?.sorted { $0.nftName > $1.nftName }
+        case .byName: NFTArray = NFTArray?.sorted { $0.nftName < $1.nftName }
         case .byPrice: NFTArray = NFTArray?.sorted { $0.price > $1.price }
         case .byRating: NFTArray = NFTArray?.sorted { $0.countStars > $1.countStars }
         }
+        
+        saveFilterType(value)
+    }
+    
+    private func filterFromStorage() -> SortVariation? {
+        if let actualFilterType = filterStorage.load() {
+            return actualFilterType
+        } else {
+            return nil
+        }
+    }
+    
+    private func saveFilterType(_ value: SortVariation) {
+        filterStorage.save(value)
     }
 }
 
 extension CartNFTViewModel: AlertProtocol  {
-    
     var alertTitle: String {
         String(localized: "Load NFT failed")
     }
@@ -121,5 +197,34 @@ extension CartNFTViewModel: AlertProtocol  {
     
     func repeatNetworkRequest() async {
         await loadNFT()
+    }
+}
+
+extension CartNFTViewModel {
+    private func convert(array: [NftForCartModel]) -> [CartNFTModel] {
+        var NFTArray = [CartNFTModel]()
+        
+        for i in array {
+            NFTArray.append(CartNFTModel(id: i.id, imageName: i.images.last ?? "", nftName: i.name, countStars: i.rating, price: i.price))
+        }
+        return NFTArray
+    }
+    
+    private func addSubscribing(){
+        dataStore.needCleanCartPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                Task {
+                    if status {
+                        await self?.reloadNFTArray()
+                    }
+                }
+            }
+            .store(in: &cancelLables)
+    }
+    
+    private func updateDataStore(new array: [CartNFTModel]) {
+        dataStore.update(nftArray: array)
+        dataStore.needToUpdateUpdateNFTArray(status: false)
     }
 }
