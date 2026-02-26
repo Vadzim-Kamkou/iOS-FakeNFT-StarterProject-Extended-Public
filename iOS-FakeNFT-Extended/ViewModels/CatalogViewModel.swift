@@ -99,7 +99,7 @@ final class CatalogViewModel: ObservableObject {
     private func applySorting() {
         switch sortType {
         case .byCount:
-            collections.sort { $0.nftCount > $1.nftCount }
+            collections.sort { $0.uniqueNftsCount > $1.uniqueNftsCount }
         case .byName:
             collections.sort { $0.name < $1.name }
         }
