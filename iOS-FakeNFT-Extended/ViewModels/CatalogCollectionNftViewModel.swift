@@ -17,22 +17,34 @@ final class CatalogCollectionNftViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     
     @AppStorage("user_favorites") private var favoritesJSON: String = "[]"
+    @AppStorage("user_cart") private var cartJSON: String = "[]"
     
     
     private let nft: Nft
     private let profileService: ProfileService
+    private let orderService: OrderService
+    
     private var favorites: [String] {
         favoritesJSON.toStringArray()
     }
     
+    private var cart: [String] {
+        cartJSON.toStringArray()
+    }
+    
+    
     
     init(
         nft: Nft,
-        profileService: ProfileService
+        profileService: ProfileService,
+        orderService: OrderService
     ) {
         self.nft = nft
         self.profileService = profileService
+        self.orderService = orderService
+        
         self.isFavouriteActive = favorites.contains(nft.id)
+        self.isInCartActive = cart.contains(nft.id)
     }
     
     func toggleFavourite() async {
@@ -62,11 +74,37 @@ final class CatalogCollectionNftViewModel: ObservableObject {
         }
     }
     
-    func toggleCart() {
+    func toggleCart() async {
+        let previousState = isInCartActive
+        let previousCart = cart
+        
         isInCartActive.toggle()
+        
+        var newCart = cart
+        if newCart.contains(nft.id) {
+            newCart.removeAll { $0 == nft.id }
+        } else {
+            newCart.append(nft.id)
+        }
+        
+        saveCart(newCart)
+        
+        do {
+            let updatedOrder = try await orderService.updateCart(newCart)
+            saveCart(updatedOrder.nfts)
+            print("Корзина обновлена на сервере")
+        } catch {
+            print("Ошибка обновления корзины: \(error)")
+            isInCartActive = previousState
+            saveCart(previousCart)
+        }
     }
     
     private func saveFavorites(_ favorites: [String]) {
         favoritesJSON = favorites.toJSONString()
+    }
+    
+    private func saveCart(_ cart: [String]) {
+        cartJSON = cart.toJSONString()
     }
 }

@@ -69,4 +69,21 @@ final class CatalogCollectionViewModel: ObservableObject {
             // При ошибке тихо продолжаем работу с пустым кэшем
         }
     }
+    
+    func loadCartIfNeeded(orderService: OrderService) async {
+        let cachedCartJSON = UserDefaults.standard.string(forKey: "user_cart") ?? "[]"
+        let cachedCart = cachedCartJSON.toStringArray()
+        
+        guard cachedCart.isEmpty else {
+            return
+        }
+        
+        do {
+            let order = try await orderService.getOrder()
+            
+            let cartJSON = order.nfts.toJSONString()
+            UserDefaults.standard.set(cartJSON, forKey: "user_cart")
+        } catch {
+        }
+    }
 }

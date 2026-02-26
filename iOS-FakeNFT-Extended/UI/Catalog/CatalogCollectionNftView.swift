@@ -18,7 +18,8 @@ struct CatalogCollectionNftView: View {
            self.nft = nft
            self._viewModel = StateObject(wrappedValue: CatalogCollectionNftViewModel(
                nft: nft,
-               profileService: servicesAssembly.profileService
+               profileService: servicesAssembly.profileService,
+               orderService: servicesAssembly.orderService
            ))
        }
     
@@ -98,7 +99,9 @@ struct CatalogCollectionNftView: View {
                 }
                 Spacer()
                 Button {
-                    viewModel.toggleCart()
+                    Task {
+                        await viewModel.toggleCart()
+                    }
                 } label: {
                     cartImage
                         .resizable()
