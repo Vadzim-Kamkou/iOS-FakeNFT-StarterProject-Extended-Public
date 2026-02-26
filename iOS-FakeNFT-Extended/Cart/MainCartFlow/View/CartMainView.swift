@@ -32,15 +32,16 @@ struct CartMainView: View {
                     UnSuccessView(viewModel: viewModel)
                         .opacity(viewModel.cartScreenState == .UnSuccess ? 1 : 0)
                 }
+                if viewModel.cartScreenState == .Loading {
+                   blockingView
+                }
             }
             .progressHUD()
             .withDestination(path: $path, paymentViewModel: paymentViewModel)
         }
         .onAppear {
             Task {
-                if !viewModel.NFTArrayIsLoaded {
-                    await viewModel.loadNFT()
-                }
+                await viewModel.loadNFT()
             }
         }
         .onChange(of: viewModel.cartScreenState) { _, newState in
@@ -53,6 +54,7 @@ struct CartMainView: View {
         }
         .onDisappear {
             Task {
+                ProgressHUD.dismiss()
                 viewModel.changeScreenState(by: .Unused)
             }
         }
@@ -64,6 +66,14 @@ struct CartMainView: View {
             CartItemsListView(viewModel: viewModel)
             paymentBlock
         }
+        .opacity(viewModel.cartScreenState == .Unused ? 1 : 0)
+    }
+    
+    private var blockingView: some View {
+        Color.primary
+            .opacity(0.001)
+            .ignoresSafeArea()
+            .allowsHitTesting(true)
     }
     
     private var emptyCartView: some View {
@@ -92,7 +102,7 @@ struct CartMainView: View {
     
     private var paymentBlock: some View {
         HStack(spacing: 24) {
-            VStack(alignment:.leading, spacing: 0) {
+            VStack(alignment:.leading, spacing: 2) {
                 Text(String(viewModel.NFTCounts).NFTStyleFormater)
                     .font(.caption1)
                     .foregroundStyle(.text)
@@ -120,8 +130,11 @@ struct CartMainView: View {
 }
 
 #Preview {
-    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), nftService: MockNFTService())
-    let paymentViewModel = PaymentViewModel(dataStore: CartDataStore())
+    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), cartService: ServicesAssembly.preview.cartSevice)
+    
+    let paymentService = PaymentServices(networkClient: DefaultNetworkClient(), storage: PaymentStorageImpl())
+    let paymentViewModel = PaymentViewModel(paymentService: paymentService, dataStore: CartDataStore())
+    
     ZStack {
         Color.clear
             .background(.backgroundForView)
@@ -144,16 +157,20 @@ struct CartMainView: View {
 }
 
 #Preview("Russian") {
-    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), nftService: MockNFTService())
-    let paymentViewModel = PaymentViewModel(dataStore: CartDataStore())
+    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), cartService: ServicesAssembly.preview.cartSevice)
+    
+    let paymentService = PaymentServices(networkClient: DefaultNetworkClient(), storage: PaymentStorageImpl())
+    let paymentViewModel = PaymentViewModel(paymentService: paymentService, dataStore: CartDataStore())
     
     CartMainView(viewModel: viewModel, paymentViewModel: paymentViewModel)
         .environment(\.locale, .init(identifier: "ru"))
 }
 
 #Preview("English") {
-    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), nftService: MockNFTService())
-    let paymentViewModel = PaymentViewModel(dataStore: CartDataStore())
+    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), cartService: ServicesAssembly.preview.cartSevice)
+    
+    let paymentService = PaymentServices(networkClient: DefaultNetworkClient(), storage: PaymentStorageImpl())
+    let paymentViewModel = PaymentViewModel(paymentService: paymentService, dataStore: CartDataStore())
     
     CartMainView(viewModel: viewModel, paymentViewModel: paymentViewModel)
         .environment(\.locale, .init(identifier: "en"))

@@ -17,11 +17,13 @@ struct PaymentGridView: View {
     
     var body: some View {
         LazyVGrid(columns: columns, spacing: 7) {
-            ForEach(viewModel.cryptoPaymentArray, id: \.self) { element in
-                PaymentTypeCell(element:PaymentType(crypto: element), border: viewModel.selectedCrypto == element)
-                    .onTapGesture {
-                        viewModel.changeStateToSelectedCrypto(crypto: element)
-                    }
+            if let array = viewModel.cryptoPaymentArray  {
+                ForEach(array, id: \.self) { element in
+                    PaymentTypeCell(element:element, border: viewModel.selectedCrypto == element.id)
+                        .onTapGesture {
+                            viewModel.changeStateToSelectedCrypto(crypto: element)
+                        }
+                }
             }
         }
     }

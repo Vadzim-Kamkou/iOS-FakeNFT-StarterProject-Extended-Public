@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct CartCellView:View {
     let viewModel: CartNFTViewModel
@@ -30,11 +31,17 @@ struct CartCellView:View {
     
     private var cartItemInfo: some View {
         HStack(spacing: 20) {
-            Image(.mockNFT)
+            KFImage(URL(string: nft.imageName))
+                .placeholder {
+                    ProgressView()
+                        .frame(width: 108, height: 108)
+                }
                 .resizable()
                 .scaledToFit()
-            
-            VStack(alignment: .leading, spacing: 20) {
+                .frame(width: 108, height: 108)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+
+            VStack(alignment: .leading, spacing: 12) {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(String(nft.nftName))
@@ -57,7 +64,7 @@ struct CartCellView:View {
     }
     
     private var starRatingView: some View {
-        HStack {
+        HStack(spacing: 2) {
             ForEach(1..<6) { hasNFTStars in
                 if hasNFTStars <= nft.countStars {
                     Image(.activeStar)
@@ -74,12 +81,10 @@ struct CartCellView:View {
 }
 
 #Preview {
-    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), nftService: MockNFTService())
-    
     ZStack {
         Color.clear
             .background(.backgroundForView)
-        CartCellView(viewModel: viewModel, nft: CartNFTModel(imageName:"mockNFT", nftName: "NFT 1" , countStars: 5, price: 1.2))
+        CartCellView(viewModel: CartNFTViewModel(dataStore: CartDataStore(), cartService: ServicesAssembly.preview.cartSevice), nft: CartNFTModel(id: "", imageName:"https://code.s3.yandex.net/Mobile/iOS/NFT/Peach/Daisy/3.png", nftName: "NFT 1" , countStars: 5, price: 1.2))
             .padding(20)
     }
 }

@@ -25,11 +25,21 @@ struct PaymentMethodView: View {
             }
             UnSuccessView(viewModel: viewModel)
                 .opacity(viewModel.paymentScreenState == .UnSuccess ? 1 : 0)
+
+            if viewModel.paymentScreenState == .Loading {
+                Color.primary
+                    .opacity(0.001)
+                    .ignoresSafeArea()
+                    .allowsHitTesting(true)
+            }
         }
         .navigationBarHidden(true)
         .toolbar(.hidden, for: .tabBar)
         .background(.backgroundForView)
         .progressHUD()
+        .task {
+            await viewModel.loadPaymentType()
+        }
         .onChange(of: viewModel.paymentScreenState) { _, newState in
             switch newState {
             case .Loading:
@@ -106,7 +116,8 @@ struct PaymentMethodView: View {
 
 #Preview {
     @Previewable @State var path = [String]()
-    let viewModel = PaymentViewModel(dataStore: CartDataStore())
+    let paymentService = PaymentServices(networkClient: DefaultNetworkClient(), storage: PaymentStorageImpl())
+    let viewModel = PaymentViewModel(paymentService: paymentService, dataStore: CartDataStore())
     ZStack {
         Color.backgroundForView
             .ignoresSafeArea()
