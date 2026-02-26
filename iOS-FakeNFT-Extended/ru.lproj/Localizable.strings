@@ -14,7 +14,6 @@
 "Back" = "Вернуться";
 "Success! Payment completed, congratulations on your purchase!" = "Успех! Оплата прошла, поздравляем с покупкой!";
 "Return to cart" = "Вернуться в корзину";
-"Failed to make payment" = "Не удалось произвести оплату";
 "Sorting" = "Сортировка";
 "Close" = "Закрыть";
 "By Price" = "По цене";
@@ -25,5 +24,4 @@
 "Pay" = "Оплатить";
 "Payment failed" = "Не удалось произвести \n оплату";
 "Load NFT failed" = "Загрузка NFT не удалась";
-"Payment failed" = "Не удалось произвести оплату";
 "Cancel" = "Отмена";
