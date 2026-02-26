@@ -18,6 +18,10 @@ struct Collection: Decodable, Identifiable, Sendable, Hashable {
         nfts.count
     }
     
+    var uniqueNftsCount: Int {
+        Set(nfts).count
+    }
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }

@@ -43,7 +43,7 @@ struct CatalogRowView: View {
             }
             .cornerRadius(12)
             
-            Text("\(collection.name) (\(collection.nftCount))")
+            Text("\(collection.name) (\(collection.uniqueNftsCount))")
                 .font(.bodyBold)
         }
     }

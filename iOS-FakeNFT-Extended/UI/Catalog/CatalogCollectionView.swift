@@ -10,6 +10,7 @@ import SwiftUI
 struct CatalogCollectionView: View {
     
     @Environment(\.dismiss) private var dismiss
+    @Environment(ServicesAssembly.self) private var servicesAssembly
     @StateObject private var viewModel: CatalogCollectionViewModel
     @State private var selectedNft: Nft?
     @State private var showAuthorPage = false
@@ -52,7 +53,7 @@ struct CatalogCollectionView: View {
             } else {
                 LazyVGrid(columns: columns, spacing: 12) {
                     ForEach(viewModel.nfts) { nft in
-                        CatalogCollectionNftView(nft: nft)
+                        CatalogCollectionNftView(nft: nft, servicesAssembly: servicesAssembly)
                             .onTapGesture {
                                 selectedNft = nft
                             }
@@ -79,7 +80,9 @@ struct CatalogCollectionView: View {
             authorWebView
         }
         .task {
+            
             await viewModel.loadNfts()
+            await viewModel.loadFavoritesIfNeeded(profileService: servicesAssembly.profileService)
         }
     }
     

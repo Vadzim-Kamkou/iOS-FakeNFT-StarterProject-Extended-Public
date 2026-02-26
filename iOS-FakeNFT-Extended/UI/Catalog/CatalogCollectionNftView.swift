@@ -9,13 +9,18 @@ import SwiftUI
 
 struct CatalogCollectionNftView: View {
     
+    @Environment(ServicesAssembly.self) private var servicesAssembly
+    
     let nft: Nft
     @StateObject private var viewModel: CatalogCollectionNftViewModel
 
-    init(nft: Nft) {
-        self.nft = nft
-        self._viewModel = StateObject(wrappedValue: CatalogCollectionNftViewModel(nft: nft))
-    }
+    init(nft: Nft, servicesAssembly: ServicesAssembly) {
+           self.nft = nft
+           self._viewModel = StateObject(wrappedValue: CatalogCollectionNftViewModel(
+               nft: nft,
+               profileService: servicesAssembly.profileService
+           ))
+       }
     
     private var favouriteImage: Image {
         viewModel.isFavouriteActive ? Image(.favouritesIcon) : Image(.favouritesIconNo)
@@ -68,7 +73,9 @@ struct CatalogCollectionNftView: View {
             .cornerRadius(12)
             .overlay(
                 Button {
-                    viewModel.toggleFavourite()
+                    Task {
+                        await viewModel.toggleFavourite()
+                    }
                 } label: {
                     favouriteImage
                         .resizable()
@@ -106,15 +113,23 @@ struct CatalogCollectionNftView: View {
 }
 
 #Preview {
-    CatalogCollectionNftView(nft: Nft(
-        id: "test-id",
-        name: "Test NFT",
-        images: ["https://code.s3.yandex.net/Mobile/iOS/NFT/Beige/Ellsa/1.png"],
-        rating: 5,
-        description: "Test description",
-        price: 39.37,
-        author: "Test Author",
-        website: "https://test.com",
-        createdAt: "2023-09-27T23:48:21.462Z[GMT]"
-    ))
+    let servicesAssembly = ServicesAssembly(
+        networkClient: DefaultNetworkClient(),
+        nftStorage: NftStorageImpl()
+    )
+    
+    return CatalogCollectionNftView(
+        nft: Nft(
+            id: "test-id",
+            name: "Test NFT",
+            images: ["https://code.s3.yandex.net/Mobile/iOS/NFT/Beige/Ellsa/1.png"],
+            rating: 5,
+            description: "Test description",
+            price: 39.37,
+            author: "Test Author",
+            website: "https://test.com",
+            createdAt: "2023-09-27T23:48:21.462Z[GMT]"
+        ),
+        servicesAssembly: servicesAssembly
+    )
 }
