@@ -26,13 +26,3 @@ struct PaymentGridView: View {
         }
     }
 }
-
-#Preview {
-    let viewModel = PaymentViewModel(dataStore: CartDataStore())
-    
-    ZStack {
-        Color.backgroundForView.ignoresSafeArea()
-        PaymentGridView(viewModel: viewModel)
-            .padding(16)
-    }
-}

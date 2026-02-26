@@ -41,13 +41,3 @@ struct DeleteConfirmationView: View {
         
     }
 }
-
-#Preview {
-    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), nftService: MockNFTService())
-    
-    ZStack {
-        Color.clear
-            .background(.white)
-        DeleteConfirmationView(viewModel: viewModel)
-    }
-}

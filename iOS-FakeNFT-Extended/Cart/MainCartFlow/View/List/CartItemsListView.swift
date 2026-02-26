@@ -24,18 +24,3 @@ struct CartItemsListView: View {
         .listStyle(.plain)
     }
 }
-
-#Preview {
-    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), nftService: MockNFTService())
-    
-    ZStack {
-        Color.clear
-            .background(.backgroundForView)
-        CartItemsListView(viewModel: viewModel)
-    }
-    .onAppear {
-        Task {
-            await viewModel.createMocksNFTArray()
-        }
-    }
-}
