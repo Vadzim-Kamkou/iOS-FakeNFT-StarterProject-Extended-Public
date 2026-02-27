@@ -10,29 +10,80 @@ import SwiftUI
 struct CatalogListView: View {
     
     @ObservedObject var viewModel: CatalogViewModel
-    @State private var selectedItem: CatalogItem?
-    
+    @Environment(ServicesAssembly.self) private var servicesAssembly
+    @State private var selectedCollection: Collection?
     
     var body: some View {
-        List(viewModel.catalogs) { catalog in
-            CatalogRowView(catalog: catalog)
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    selectedItem = catalog
+        Group {
+            if viewModel.isLoading && viewModel.collections.isEmpty {
+                ProgressView("Загрузка коллекций...")
+            } else if let error = viewModel.errorMessage, viewModel.collections.isEmpty {
+                VStack(spacing: 16) {
+                    Text(error)
+                        .foregroundColor(.red)
+                        .multilineTextAlignment(.center)
+                    Button("Повторить") {
+                        Task {
+                            await viewModel.loadInitialCollections()
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
                 }
-                .listRowSeparator(.hidden)
-            
+                .padding()
+            } else {
+                List {
+                    ForEach(viewModel.collections) { collection in
+                        CatalogRowView(collection: collection)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                selectedCollection = collection
+                            }
+                            .listRowSeparator(.hidden)
+                            .onAppear {
+                                if collection.id == viewModel.collections.last?.id {
+                                    Task {
+                                        await viewModel.loadMoreCollections()
+                                    }
+                                }
+                            }
+                    }
+                    
+                    if viewModel.isLoadingMore {
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                                .frame(width: 30, height: 30)
+                            Spacer()
+                        }
+                        .listRowSeparator(.hidden)
+                    }
+                }
+                .listSectionSpacing(0)
+                .listStyle(.plain)
+                .navigationDestination(item: $selectedCollection) { collection in
+                    CatalogCollectionView(
+                        collection: collection,
+                        nftService: servicesAssembly.nftService
+                    )
+                }
+            }
         }
-        .listSectionSpacing(0)
-        .listStyle(.plain)
-        .navigationDestination(item: $selectedItem) { catalog in
-            CollectionView(catalog: catalog)
+        .task {
+            if viewModel.collections.isEmpty {
+                await viewModel.loadInitialCollections()
+            }
         }
     }
 }
 
 #Preview {
     NavigationStack {
-        CatalogListView(viewModel: CatalogViewModel())
+        CatalogListView(viewModel: CatalogViewModel(
+            collectionService: CollectionServiceImpl(networkClient: DefaultNetworkClient())
+        ))
     }
+    .environment(ServicesAssembly(
+        networkClient: DefaultNetworkClient(),
+        nftStorage: NftStorageImpl()
+    ))
 }

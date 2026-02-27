@@ -54,8 +54,13 @@ actor DefaultNetworkClient: NetworkClient {
 
         var urlRequest = URLRequest(url: endpoint)
         urlRequest.httpMethod = request.httpMethod.rawValue
-
-        if let dto = request.dto,
+        
+        if let formData = request.formData,
+           let formBody = createURLEncodedBody(from: formData) {
+            urlRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+            urlRequest.httpBody = formBody
+        }
+        else if let dto = request.dto,
            let dtoEncoded = try? encoder.encode(dto) {
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             urlRequest.httpBody = dtoEncoded
@@ -63,6 +68,23 @@ actor DefaultNetworkClient: NetworkClient {
         urlRequest.addValue(RequestConstants.token, forHTTPHeaderField: "X-Practicum-Mobile-Token")
 
         return urlRequest
+    }
+    
+    private func createURLEncodedBody(from formData: [String: [String]]) -> Data? {
+        var components: [String] = []
+        
+        for (key, values) in formData {
+            for value in values {
+                guard let encodedKey = key.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                      let encodedValue = value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                else { continue }
+                
+                components.append("\(encodedKey)=\(encodedValue)")
+            }
+        }
+        
+        let bodyString = components.joined(separator: "&")
+        return bodyString.data(using: .utf8)
     }
 
     private func parse<T: Decodable>(data: Data) async throws -> T {
