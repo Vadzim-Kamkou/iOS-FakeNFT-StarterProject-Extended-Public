@@ -5,25 +5,28 @@
 //  Created by Владимир on 19.02.2026.
 //
 import Observation
+import Combine
 
+@MainActor
 @Observable final class CartDataStore {
-    private var paymentMethodIsSelected: PaymentType?
-    private var count: Double?
     
-    var paymentModel: PaymentModel?
+    private var actualCartArray: [CartNFTModel] = []
+    private let needCleanCartSubject = CurrentValueSubject<Bool, Never>(false)
     
-    func updatePayment(method: PaymentType?) {
-        paymentMethodIsSelected = method
-        checkSate()
+    var needCleanCartPublisher: AnyPublisher<Bool, Never> {
+        needCleanCartSubject.eraseToAnyPublisher()
     }
     
-    func updateNFT(totalPrice: Double) {
-        count = totalPrice
+    func update(nftArray: [CartNFTModel]) {
+        actualCartArray = nftArray
     }
     
-    private func checkSate() {
-        guard let paymentMethodIsSelected, let count else { return }
-        paymentModel = PaymentModel(count: count, type: paymentMethodIsSelected)
+    func loadActualNFTArray() -> [String] {
+        let actualArrayConvertToString = actualCartArray.map { $0.id }
+        return actualArrayConvertToString
+    }
+    
+    func needToUpdateUpdateNFTArray(status: Bool) {
+        needCleanCartSubject.send(status)
     }
 }
-

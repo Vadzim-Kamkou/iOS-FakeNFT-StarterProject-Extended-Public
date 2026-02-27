@@ -1,42 +1,33 @@
 import SwiftUI
+import Logging
 
 struct TabBarView: View {
     
     @State private var selectedTab = 0
     @State private var stateCurt = false
+    private let cartDataStore: CartDataStore
+    
+    let servicesAssembly: ServicesAssembly
     
     @State var cartViewModel: CartNFTViewModel
     @State var paymentViewModel: PaymentViewModel
     
-    init() {
-        let cartDataStore = CartDataStore()
-        let mockNFRService = MockNFTService()
-        cartViewModel = CartNFTViewModel(dataStore: cartDataStore, nftService: mockNFRService)
-        paymentViewModel = PaymentViewModel(dataStore: cartDataStore)
+    init(servicesAssembly: ServicesAssembly) {
+        self.servicesAssembly = servicesAssembly
+        self.cartDataStore = CartDataStore()
         
-        // Настройка цветов при инициализации
-        let appearance = UITabBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        
-        // Фон
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(Color.backgroundForView)
-        
-        // Цвет неактивных иконок и текста
-        appearance.stackedLayoutAppearance.normal.iconColor = UIColor(.text)
-        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
-            .foregroundColor: UIColor(.text),
-            .font: UIFont.systemFont(ofSize: 10, weight: .medium)
-        ]
-        
-        // Цвет активных иконок и текста
-        appearance.stackedLayoutAppearance.selected.iconColor = UIColor(.blueUniversal)
-        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
-            .foregroundColor: UIColor(.blueUniversal),
-            .font: UIFont.systemFont(ofSize: 10, weight: .medium)
-        ]
-        
-        UITabBar.appearance().standardAppearance = appearance
+        _cartViewModel = State(
+            initialValue: CartNFTViewModel(
+                dataStore: cartDataStore,
+                cartService: servicesAssembly.cartSevice
+            )
+        )
+        _paymentViewModel = State(
+            initialValue: PaymentViewModel(
+                paymentService: servicesAssembly.paymentService,
+                dataStore: cartDataStore
+            )
+        )
     }
     
     var body: some View {
@@ -93,9 +84,10 @@ struct TabBarView: View {
                 }
                 .tag(3)
         }
+        .disabled(cartViewModel.cartScreenState == .Loading ? true : false)
     }
 }
 
 #Preview {
-    TabBarView()
+    TabBarView(servicesAssembly: ServicesAssembly.preview)
 }

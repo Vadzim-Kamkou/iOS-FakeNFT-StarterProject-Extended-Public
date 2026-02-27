@@ -39,8 +39,10 @@ struct CartFilterView: View {
                     .font(.headline5)
                     .padding(.vertical, 18)
                     .padding(.horizontal, 16)
+                    .frame(maxWidth: .infinity)
+                    .contentShape(Rectangle())
                     .onTapGesture {
-                        viewModel.filterBy(value)
+                        viewModel.tapOnFilterButton(value)
                     }
                 separator
                     .opacity(value == .byName ? 0 : 1)
@@ -65,6 +67,8 @@ struct CartFilterView: View {
                     .foregroundStyle(.blueUniversal)
                     .padding(.vertical, 18)
                     .padding(.horizontal, 16)
+                    .frame(maxWidth: .infinity)
+                    .contentShape(Rectangle())
             }
         }
         .frame(maxWidth: .infinity)
@@ -75,7 +79,7 @@ struct CartFilterView: View {
 
 #Preview {
     @Previewable @State var needSelectFilter = false
-    let viewModel = CartNFTViewModel(dataStore: CartDataStore(), nftService: MockNFTService())
+    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), cartService: ServicesAssembly.preview.cartSevice)
     
     ZStack {
         Color

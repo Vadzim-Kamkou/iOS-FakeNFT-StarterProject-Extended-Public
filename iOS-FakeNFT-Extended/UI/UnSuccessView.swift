@@ -19,15 +19,15 @@ struct UnSuccessView: View {
                 alertTitle
                 horizontalSeparator
                 HStack(spacing: 0) {
-                    button(withText: NSLocalizedString("Cancel", comment: ""), action: {
+                    button(withKey: "Cancel") {
                         viewModel.cancelPaymentRequest()
-                    })
+                    }
                     verticalSeparator
-                    button(withText: NSLocalizedString("Error.repeat", comment: ""), action: {
+                    button(withKey: "Error.repeat") {
                         Task {
                             await viewModel.repeatNetworkRequest()
                         }
-                    })
+                    }
                 }
                 .frame(height: 40)
             }
@@ -61,12 +61,12 @@ struct UnSuccessView: View {
             .frame(height: 40)
     }
     
-    private func button(withText text: String, action: @escaping () -> Void) -> some View {
+    private func button(withKey key: String, action: @escaping () -> Void) -> some View {
         Button {
             action()
         } label: {
-            Text(text)
-                .font(text == "Error.repeat" ? .bodyBold : .bodyRegular)
+            Text(NSLocalizedString(key, comment: ""))
+                .font(key == "Error.repeat" ? .bodyBold : .bodyRegular)
                 .foregroundStyle(.blueUniversal)
         }
         .padding(.vertical, 11)
@@ -76,7 +76,9 @@ struct UnSuccessView: View {
 
 #Preview {
     @Previewable @State var showAlert = false
-    let viewModel = PaymentViewModel(dataStore: CartDataStore())
+    let paymentService = PaymentServices(networkClient: DefaultNetworkClient(), storage: PaymentStorageImpl())
+    let viewModel = PaymentViewModel(paymentService: paymentService, dataStore: CartDataStore())
+
     ZStack {
         Color
             .backgroundForView

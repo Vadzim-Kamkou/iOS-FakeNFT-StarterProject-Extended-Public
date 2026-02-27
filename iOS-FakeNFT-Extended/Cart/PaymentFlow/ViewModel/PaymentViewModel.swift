@@ -6,30 +6,59 @@
 //
 import Observation
 
+@MainActor
 @Observable final class PaymentViewModel {
     
     // MARK: - Dependencies
+    private let paymentService: PaymentService
     private let dataStore: CartDataStore
-    private var paymentModel: PaymentModel? {
-        dataStore.paymentModel
-    }
     
     // MARK: - State Properties
-    let cryptoPaymentArray: [Crypto]
+    var cryptoPaymentArray: [PaymentModel]? = nil
     var paymentScreenState: ScreenState = .Unused
-    var selectedCrypto: Crypto? = nil
-    var isActivePayment: Bool { selectedCrypto != nil }
+    var selectedCrypto: String? = nil
     
-    init(dataStore: CartDataStore) {
-        self.cryptoPaymentArray = Crypto.createCryptoArray()
+    var isActivePayment: Bool { selectedCrypto != nil }
+    var paymentTypeIsLoaded: Bool {
+        if let cryptoPaymentArray, !cryptoPaymentArray.isEmpty {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    init(paymentService: PaymentService, dataStore: CartDataStore) {
+        self.paymentService = paymentService
         self.dataStore = dataStore
+    }
+    
+    // MARK: Load CryptoArray
+    func loadPaymentType() async {
+        paymentScreenState = .Loading
+        let paymentArray = try? await paymentService.loadPaymentType()
+        if let paymentArray {
+            cryptoPaymentArray = paymentArray
+            paymentScreenState = .Unused
+        } else {
+            paymentScreenState = .UnSuccess
+        }
     }
     
     // MARK: - Data Loading
     func processPayment() async {
+        guard let selectedCrypto else { return }
         paymentScreenState = .Loading
-        try? await Task.sleep(nanoseconds: 1_500_000_000) // временно для теста ProgressHUD
-        paymentScreenState = .Success //  менять для проверки разных состояний
+        do {
+            try await paymentService.paymentStatus(forType: selectedCrypto)
+            let actualNftInCart: [String] = dataStore.loadActualNFTArray()
+            try await paymentService.paymentActon(nftToPay: actualNftInCart)
+            dataStore.needToUpdateUpdateNFTArray(status: true)
+            paymentScreenState = .Success
+        } catch {
+            print("[PaymentViewModel/processPayment]: Неудачная загрузка")
+            paymentScreenState = .UnSuccess
+        }
+        
     }
     
     // MARK: - Screen State (управление состоянием экрана)
@@ -37,9 +66,8 @@ import Observation
         paymentScreenState = actualState
     }
     
-    func changeStateToSelectedCrypto(crypto: Crypto) {
-        dataStore.updatePayment(method: PaymentType(crypto: crypto))
-        selectedCrypto = crypto
+    func changeStateToSelectedCrypto(crypto: PaymentModel) {
+        selectedCrypto = crypto.id
     }
 }
 
@@ -52,7 +80,6 @@ extension PaymentViewModel: AlertProtocol {
     func cancelPaymentRequest() {
         paymentScreenState = .Unused
         selectedCrypto = nil
-        dataStore.updatePayment(method: nil)
     }
     
     func repeatNetworkRequest() async {

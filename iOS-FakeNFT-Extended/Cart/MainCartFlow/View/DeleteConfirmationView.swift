@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct DeleteConfirmationView: View {
     let viewModel: CartNFTViewModel
@@ -17,20 +18,29 @@ struct DeleteConfirmationView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 12) {
-                Image(.mockNFT)
+                KFImage(URL(string: viewModel.nftToRemoveImageName))
+                    .placeholder {
+                        ProgressView()
+                            .frame(width: 108, height: 108)
+                    }
                     .resizable()
                     .scaledToFit()
-                    .frame(maxWidth: 108, maxHeight: 108)
+                    .frame(width: 108, height: 108)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
                 Text("Are you sure you want to delete this item from your trash?")
                     .font(.caption2)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: 180)
                 HStack(spacing: 8) {
                     ActionButton(title: "Remove", verticalPadding: 11, isBoldTextButton: false, cornerRadius: 12, textColor: .red) {
-                        viewModel.confirmDeletion(true)
+                        Task {
+                            await viewModel.confirmDeletion(true)
+                        }
                     }
                     ActionButton(title: "Back", verticalPadding: 11, isBoldTextButton: false, cornerRadius: 12, textColor: .white) {
-                        viewModel.confirmDeletion(false)
+                        Task {
+                            await viewModel.confirmDeletion(false)
+                        }
                     }
                 }
                 .padding(.top, 8)
@@ -39,15 +49,5 @@ struct DeleteConfirmationView: View {
         }
         .presentationBackground(.clear)
         
-    }
-}
-
-#Preview {
-    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), nftService: MockNFTService())
-    
-    ZStack {
-        Color.clear
-            .background(.white)
-        DeleteConfirmationView(viewModel: viewModel)
     }
 }

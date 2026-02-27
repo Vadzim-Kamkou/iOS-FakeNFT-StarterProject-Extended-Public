@@ -14,7 +14,6 @@
 "Back" = "Back";
 "Success! Payment completed, congratulations on your purchase!" = "Success! Payment completed, congratulations on your purchase!";
 "Return to cart" = "Return to cart";
-"Failed to make payment" = "Failed to make payment";
 "Sorting" = "Sorting";
 "Close" = "Close";
 "By Price" = "By Price";
@@ -25,5 +24,4 @@
 "Pay" = "Pay";
 "Payment failed" = "Payment failed";
 "Load NFT failed" = "Load NFT failed";
-"Payment failed" = "Payment failed";
 "Cancel" = "Cancel";
