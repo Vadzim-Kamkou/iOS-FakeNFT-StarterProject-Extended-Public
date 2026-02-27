@@ -11,14 +11,17 @@ struct ProfileStruct: Hashable, Identifiable {
     let name: String
     let description: String
     let site: String
-    let url: String
+    let urlString: String
     let allNfts: [NftId]
+    let nftIds: [String]
+    let likeIds: [String]
 }
 
 struct NftId: Hashable, Identifiable {
     let id = UUID()
+    var remoteId: String? = nil
     let name: String
-    let logo: String
+    let logoUrlString: String
     let price: String
     let rating: Int
     let creater: String
@@ -31,7 +34,7 @@ extension NftId {
        
         NftId(
             name: "Archie",
-            logo: "https://example.com/archie.jpg",
+            logoUrlString: "https://example.com/archie.jpg",
             price: "1,78",
             rating: 5,
             creater: "Creator A",
@@ -39,7 +42,7 @@ extension NftId {
         ),
         NftId(
             name: "Pixi",
-            logo: "https://example.com/pixi.jpg",
+            logoUrlString: "https://example.com/pixi.jpg",
             price: "1,78",
             rating: 4,
             creater: "Creator B",
@@ -47,7 +50,7 @@ extension NftId {
         ),
         NftId(
             name: "Melissa",
-            logo: "https://example.com/melissa.jpg",
+            logoUrlString: "https://example.com/melissa.jpg",
             price: "1,78",
             rating: 5,
             creater: "Creator C",
@@ -55,7 +58,7 @@ extension NftId {
         ),
         NftId(
             name: "April",
-            logo: "https://fivmagazine.com/wp-content/uploads/2022/04/nft-non-fungible-token-token-collection-bored-ape-yacht-club-example-army-monkey.jpg",
+            logoUrlString: "https://fivmagazine.com/wp-content/uploads/2022/04/nft-non-fungible-token-token-collection-bored-ape-yacht-club-example-army-monkey.jpg",
             price: "1,78",
             rating: 4,
             creater: "Creator D",
@@ -63,7 +66,7 @@ extension NftId {
         ),
         NftId(
             name: "Daisy",
-            logo: "https://fivmagazine.com/wp-content/uploads/2022/04/nft-non-fungible-token-token-collection-bored-ape-yacht-club-example-army-monkey.jpg",
+            logoUrlString: "https://fivmagazine.com/wp-content/uploads/2022/04/nft-non-fungible-token-token-collection-bored-ape-yacht-club-example-army-monkey.jpg",
             price: "1,78",
             rating: 5,
             creater: "Creator E",
@@ -71,7 +74,7 @@ extension NftId {
         ),
         NftId(
             name: "Lilo",
-            logo: "https://fivmagazine.com/wp-content/uploads/2022/04/nft-non-fungible-token-token-collection-bored-ape-yacht-club-example-army-monkey.jpg",
+            logoUrlString: "https://fivmagazine.com/wp-content/uploads/2022/04/nft-non-fungible-token-token-collection-bored-ape-yacht-club-example-army-monkey.jpg",
             price: "1,78",
             rating: 5,
             creater: "Creator F",
@@ -79,7 +82,7 @@ extension NftId {
         ),
         NftId(
             name: "Cosmic Cat",
-            logo: "https://example.com/cosmic_cat.jpg",
+            logoUrlString: "https://example.com/cosmic_cat.jpg",
             price: "2.45",
             rating: 4,
             creater: "John Doe",
@@ -87,7 +90,7 @@ extension NftId {
         ),
         NftId(
             name: "Neon Dragon",
-            logo: "https://example.com/neon_dragon.jpg",
+            logoUrlString: "https://example.com/neon_dragon.jpg",
             price: "0.99",
             rating: 3,
             creater: "Alice Smith",
@@ -95,7 +98,7 @@ extension NftId {
         ),
         NftId(
             name: "Golden Phoenix",
-            logo: "https://example.com/golden_phoenix.jpg",
+            logoUrlString: "https://example.com/golden_phoenix.jpg",
             price: "5.00",
             rating: 5,
             creater: "Bob Johnson",
@@ -103,7 +106,7 @@ extension NftId {
         ),
         NftId(
             name: "Mystic Owl",
-            logo: "https://example.com/mystic_owl.jpg",
+            logoUrlString: "https://example.com/mystic_owl.jpg",
             price: "1.50",
             rating: 4,
             creater: "Emma Wilson",
@@ -111,7 +114,7 @@ extension NftId {
         ),
         NftId(
             name: "Cyber Fox",
-            logo: "https://example.com/cyber_fox.jpg",
+            logoUrlString: "https://example.com/cyber_fox.jpg",
             price: "3.20",
             rating: 4,
             creater: "Michael Brown",
@@ -119,7 +122,7 @@ extension NftId {
         ),
         NftId(
             name: "Shadow Wolf",
-            logo: "https://example.com/shadow_wolf.jpg",
+            logoUrlString: "https://example.com/shadow_wolf.jpg",
             price: "0.75",
             rating: 3,
             creater: "Sophia Davis",
@@ -127,7 +130,7 @@ extension NftId {
         ),
         NftId(
             name: "Ice Bear",
-            logo: "https://example.com/ice_bear.jpg",
+            logoUrlString: "https://example.com/ice_bear.jpg",
             price: "4.10",
             rating: 5,
             creater: "James Miller",
@@ -135,7 +138,7 @@ extension NftId {
         ),
         NftId(
             name: "Fire Eagle",
-            logo: "https://example.com/fire_eagle.jpg",
+            logoUrlString: "https://example.com/fire_eagle.jpg",
             price: "2.00",
             rating: 4,
             creater: "Olivia Garcia",
@@ -143,7 +146,7 @@ extension NftId {
         ),
         NftId(
             name: "Thunder Lion",
-            logo: "https://example.com/thunder_lion.jpg",
+            logoUrlString: "https://example.com/thunder_lion.jpg",
             price: "1.25",
             rating: 4,
             creater: "William Martinez",
@@ -151,7 +154,7 @@ extension NftId {
         ),
         NftId(
             name: "Star Whale",
-            logo: "https://example.com/star_whale.jpg",
+            logoUrlString: "https://example.com/star_whale.jpg",
             price: "6.50",
             rating: 5,
             creater: "Isabella Rodriguez",
@@ -165,8 +168,10 @@ extension ProfileStruct {
         name: "Joaquin Phoenix",
         description: "Дизайнер из Казани, люблю цифровое искусство и бейглы. В моей коллекции уже 100+ NFT, и еще больше — на моём сайте. Открыт к коллаборациям.",
         site: "Joaquin Phoenix.com",
-        url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYU7QQ7VBlAXdZIKSFWJlG7c7pPitNPBpU-Q&s",
-        allNfts: NftId.mockAllNfts
+        urlString: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYU7QQ7VBlAXdZIKSFWJlG7c7pPitNPBpU-Q&s",
+        allNfts: NftId.mockAllNfts,
+        nftIds: [],
+        likeIds: []
     )
 }
 

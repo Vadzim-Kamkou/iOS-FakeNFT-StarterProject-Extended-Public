@@ -8,50 +8,14 @@ import SwiftUI
 
 struct MyNftScreen: View {
     @EnvironmentObject var viewModel: ProfileViewModel
-    @State private var sortOption: SortOption = .none
+    @Environment(ServicesAssembly.self) private var services
     @State private var showSortDialog = false
     @Environment(\.dismiss) private var dismiss
-    
-    private enum SortOption {
-        case none, price, rating, name
-    }
-    
-    private func doublePrice(from string: String) -> Double {
-        Double(string.replacingOccurrences(of: ",", with: ".")) ?? 0.0
-    }
-    
-    private var sortedNfts: [NftId] {
-        let base = viewModel.allNftsList
-        
-        switch sortOption {
-        case .none:
-            return base
-        case .price:
-            return base.sorted { nft1, nft2 in
-                let price1 = doublePrice(from: nft1.price)
-                let price2 = doublePrice(from: nft2.price)
-                if price1 != price2 {
-                    return price1 > price2
-                }
-                return nft1.name < nft2.name
-            }
-        case .rating:
-            return base.sorted { nft1, nft2 in
-                if nft1.rating != nft2.rating {
-                    return nft1.rating > nft2.rating
-                }
-                return nft1.name < nft2.name
-            }
-        case .name:
-            return base.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-        }
-    }
     
     var body: some View {
         NavigationStack {
             ZStack {
                 if viewModel.allNftsList.isEmpty {
-                    // 👇 ТОЧНО ПО ЦЕНТРУ ЭКРАНА
                     VStack(spacing: 20) {
                         
                         
@@ -59,12 +23,13 @@ struct MyNftScreen: View {
                             .font(.bodyBold)
                             .foregroundColor(.primary)
                             
+                            
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     ScrollView {
                         VStack(spacing: 0) {
-                            ForEach(sortedNfts) { nft in
+                            ForEach(viewModel.sortedMyNfts) { nft in
                                 MyNftCell(nft: nft)
                                     .environmentObject(viewModel)
                             }
@@ -88,6 +53,7 @@ struct MyNftScreen: View {
                     Text("Мои NFT")
                         .font(.bodyBold)
                         .foregroundColor(.primary)
+                        .opacity(viewModel.allNftsList.isEmpty ? 0 : 1)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if !viewModel.allNftsList.isEmpty {
@@ -103,17 +69,23 @@ struct MyNftScreen: View {
             }
             .navigationBarTitleDisplayMode(.inline)
         }
+        .task {
+            // 1. Загружаем профиль, чтобы получить ID всех NFT
+            await viewModel.loadProfile(using: services.profileService, id: "1")
+            // 2. Загружаем данные для каждого NFT по их ID
+            await viewModel.loadMyNfts(using: services.nftService)
+        }
         .confirmationDialog("Сортировка",
                             isPresented: $showSortDialog,
                             titleVisibility: .visible) {
             Button("По цене") {
-                sortOption = .price
+                viewModel.myNftSortOption = .price
             }
             Button("По рейтингу") {
-                sortOption = .rating
+                viewModel.myNftSortOption = .rating
             }
             Button("По названию") {
-                sortOption = .name
+                viewModel.myNftSortOption = .name
             }
             Button("Закрыть", role: .cancel) { }
         }
@@ -122,15 +94,30 @@ struct MyNftScreen: View {
 
 #Preview {
     let viewModel = ProfileViewModel()
+    let networkClient = DefaultNetworkClient()
+    let nftStorage = NftStorageImpl()
     
     MyNftScreen()
         .environmentObject(viewModel)
+        .environment(ServicesAssembly(
+            networkClient: networkClient,
+            nftStorage: nftStorage
+        ))
 }
 
 #Preview("Пустой список") {
-    let viewModel = ProfileViewModel()
-    viewModel.allNfts = []
+    let viewModel: ProfileViewModel = {
+        let vm = ProfileViewModel()
+        vm.allNfts = []
+        return vm
+    }()
+    let networkClient = DefaultNetworkClient()
+    let nftStorage = NftStorageImpl()
     
-    return MyNftScreen()
+    MyNftScreen()
         .environmentObject(viewModel)
+        .environment(ServicesAssembly(
+            networkClient: networkClient,
+            nftStorage: nftStorage
+        ))
 }

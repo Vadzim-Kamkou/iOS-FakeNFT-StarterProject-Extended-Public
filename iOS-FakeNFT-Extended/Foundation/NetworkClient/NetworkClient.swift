@@ -59,6 +59,13 @@ actor DefaultNetworkClient: NetworkClient {
            let dtoEncoded = try? encoder.encode(dto) {
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             urlRequest.httpBody = dtoEncoded
+        } else if let body = request.body {
+            urlRequest.httpBody = body
+            if let headers = request.headers {
+                for (key, value) in headers {
+                    urlRequest.setValue(value, forHTTPHeaderField: key)
+                }
+            }
         }
         urlRequest.addValue(RequestConstants.token, forHTTPHeaderField: "X-Practicum-Mobile-Token")
 
