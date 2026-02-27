@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct FavoriteNftScreen: View {
-    @EnvironmentObject var viewModel: ProfileViewModel
+    @Environment(ProfileViewModel.self) private var viewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(ServicesAssembly.self) private var services
     
@@ -33,7 +33,6 @@ struct FavoriteNftScreen: View {
                         ) {
                             ForEach(viewModel.favoriteNfts) { nft in
                                 FavoriteNftCell(nft: nft)
-                                    .environmentObject(viewModel)
                             }
                         }
                         .padding(.horizontal, 16)
@@ -72,7 +71,7 @@ struct FavoriteNftScreen: View {
     let nftStorage = NftStorageImpl()
     
     FavoriteNftScreen()
-        .environmentObject(viewModel)
+        .environment(viewModel)
         .environment(ServicesAssembly(
             networkClient: networkClient,
             nftStorage: nftStorage
@@ -93,6 +92,6 @@ struct FavoriteNftScreen: View {
     )
     
     FavoriteNftScreen()
-        .environmentObject(viewModel)
+        .environment(viewModel)
         .environment(services)
 }

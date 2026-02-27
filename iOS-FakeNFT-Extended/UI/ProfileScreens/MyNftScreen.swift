@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct MyNftScreen: View {
-    @EnvironmentObject var viewModel: ProfileViewModel
+    @Environment(ProfileViewModel.self) private var viewModel
     @Environment(ServicesAssembly.self) private var services
     @State private var showSortDialog = false
     @Environment(\.dismiss) private var dismiss
@@ -31,7 +31,6 @@ struct MyNftScreen: View {
                         VStack(spacing: 0) {
                             ForEach(viewModel.sortedMyNfts) { nft in
                                 MyNftCell(nft: nft)
-                                    .environmentObject(viewModel)
                             }
                         }
                         .padding(.trailing, 39)
@@ -98,7 +97,7 @@ struct MyNftScreen: View {
     let nftStorage = NftStorageImpl()
     
     MyNftScreen()
-        .environmentObject(viewModel)
+        .environment(viewModel)
         .environment(ServicesAssembly(
             networkClient: networkClient,
             nftStorage: nftStorage
@@ -115,7 +114,7 @@ struct MyNftScreen: View {
     let nftStorage = NftStorageImpl()
     
     MyNftScreen()
-        .environmentObject(viewModel)
+        .environment(viewModel)
         .environment(ServicesAssembly(
             networkClient: networkClient,
             nftStorage: nftStorage

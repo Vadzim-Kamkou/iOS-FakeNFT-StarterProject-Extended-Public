@@ -9,7 +9,7 @@ import SwiftUI
 import Kingfisher
 
 struct MyNftCell: View {
-    @EnvironmentObject var viewModel: ProfileViewModel
+    @Environment(ProfileViewModel.self) private var viewModel
     @Environment(ServicesAssembly.self) private var services
     let nft: NftId
     
@@ -130,8 +130,8 @@ struct StarRatingView: View {
         rating: 4,
         creater: "Creator D",
         isLiked: true
-    ) )
-    .environmentObject(ProfileViewModel())
+    ))
+    .environment(ProfileViewModel())
     .environment(ServicesAssembly(
         networkClient: networkClient,
         nftStorage: nftStorage

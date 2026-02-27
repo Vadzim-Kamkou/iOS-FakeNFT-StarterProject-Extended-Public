@@ -6,39 +6,39 @@
 //
 
 import Foundation
-import Combine
 import ProgressHUD
 
 enum SortOption {
     case none, price, rating, name
 }
 
-final class ProfileViewModel: ObservableObject {
-    @Published var name: String
-    @Published var description: String
-    @Published var websiteDisplay: String
-    @Published var avatarURL: String
-    @Published var websiteFullURL: String = "https://practicum.yandex.ru/ios-developer/?from=catalog"
+@Observable
+final class ProfileViewModel {
+    var name: String
+    var description: String
+    var websiteDisplay: String
+    var avatarURL: String
+    var websiteFullURL: String = "https://practicum.yandex.ru/ios-developer/?from=catalog"
     
-    @Published var myNftCount: Int
-    @Published var favoriteNftCount: Int
+    var myNftCount: Int
+    var favoriteNftCount: Int
     
-    @Published var allNfts: [NftId]
-    @Published var nftIds: [String]
-    @Published var likeIds: [String]
-    @Published var favoriteNfts: [NftId] = []
+    var allNfts: [NftId]
+    var nftIds: [String]
+    var likeIds: [String]
+    var favoriteNfts: [NftId] = []
     
     // MARK: - Edit Profile State
-    @Published var editName: String = ""
-    @Published var editDescription: String = ""
-    @Published var editWebsite: String = ""
-    @Published var editAvatar: String = ""
+    var editName: String = ""
+    var editDescription: String = ""
+    var editWebsite: String = ""
+    var editAvatar: String = ""
     
     // MARK: - My NFT Sort State
-    @Published var myNftSortOption: SortOption = .none
+    var myNftSortOption: SortOption = .none
     
-    @Published var isLoading: Bool = false
-    @Published var errorMessage: String?
+    var isLoading: Bool = false
+    var errorMessage: String?
     
     var allNftsList: [NftId] {
         allNfts
@@ -177,8 +177,6 @@ final class ProfileViewModel: ObservableObject {
             websiteDisplay = profile.site
             avatarURL = profile.urlString
             websiteFullURL = profile.site
-
-            // API возвращает ID в виде одной строки ["1,2,3"], парсим их в массив
             nftIds = profile.nftIds.flatMap { $0.split(separator: ",") }.map { String($0).trimmingCharacters(in: .whitespaces) }
             likeIds = profile.likeIds.flatMap { $0.split(separator: ",") }.map { String($0).trimmingCharacters(in: .whitespaces) }
 
@@ -205,7 +203,6 @@ final class ProfileViewModel: ObservableObject {
         allNfts = await withTaskGroup(of: NftId?.self, returning: [NftId].self) { group in
             for id in nftIds {
                 group.addTask {
-                    // Безопасно пытаемся загрузить каждый NFT. Если один упадет, процесс не прервется.
                     guard let nft = try? await nftService.loadNft(id: id) else { return nil }
                     return NftId(
                         remoteId: nft.id,
@@ -214,7 +211,7 @@ final class ProfileViewModel: ObservableObject {
                         price: String(format: "%.2f", nft.price),
                         rating: nft.rating,
                         creater: nft.author,
-                        isLiked: self.likeIds.contains(nft.id) // Проверяем, лайкнут ли этот NFT
+                        isLiked: self.likeIds.contains(nft.id)
                     )
                 }
             }
@@ -235,7 +232,6 @@ final class ProfileViewModel: ObservableObject {
             isLoading = false
             ProgressHUD.dismiss()
         }
-        // чистим старые данные
         favoriteNfts = []
 
         guard !likeIds.isEmpty else {
@@ -254,7 +250,7 @@ final class ProfileViewModel: ObservableObject {
                         price: String(format: "%.2f", nft.price),
                         rating: nft.rating,
                         creater: nft.author,
-                        isLiked: true // Это избранное, значит лайк стоит
+                        isLiked: true
                     )
                 }
             }

@@ -10,7 +10,7 @@ import Kingfisher
 
 struct ProfileScreen: View {
     @Environment(ServicesAssembly.self) private var services
-    @StateObject private var viewModel = ProfileViewModel()
+    @State private var viewModel = ProfileViewModel()
     
     var body: some View {
         NavigationStack {
@@ -20,7 +20,7 @@ struct ProfileScreen: View {
                     NavigationLink {
                         EditProfileScreen()
                             .navigationBarBackButtonHidden(true)
-                            .environmentObject(viewModel)
+                            .environment(viewModel)
                     } label: {
                         Image(.editIcon)
                             .renderingMode(.template)
@@ -81,13 +81,13 @@ struct ProfileScreen: View {
                     ProfileCell(text: "Мои NFT", number: viewModel.myNftCount) {
                         MyNftScreen()
                             .navigationBarBackButtonHidden(true)
-                            .environmentObject(viewModel)
+                            .environment(viewModel)
                     }
                     
                     ProfileCell(text: "Избранные NFT", number: viewModel.favoriteNftCount) {
                         FavoriteNftScreen()
                             .navigationBarBackButtonHidden(true)
-                            .environmentObject(viewModel)
+                            .environment(viewModel)
                     }
                 }
                 
