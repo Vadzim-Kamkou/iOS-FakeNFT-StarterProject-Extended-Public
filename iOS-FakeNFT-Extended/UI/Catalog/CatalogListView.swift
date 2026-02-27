@@ -66,6 +66,9 @@ struct CatalogListView: View {
                         nftService: servicesAssembly.nftService
                     )
                 }
+                .refreshable {
+                    await viewModel.loadInitialCollections()
+                }
             }
         }
         .task {
