@@ -94,7 +94,7 @@ struct CatalogCollectionNftView: View {
                     Text(nft.name)
                         .font(.bodyBold)
                         .lineLimit(1)
-                    Text("\(String(format: "%.2f", nft.price)) ETH")
+                    Text("\(NumberFormatter.priceFormatter.string(from: NSNumber(value: nft.price)) ?? "0.00") ETH")
                         .font(.medium10)
                 }
                 Spacer()
