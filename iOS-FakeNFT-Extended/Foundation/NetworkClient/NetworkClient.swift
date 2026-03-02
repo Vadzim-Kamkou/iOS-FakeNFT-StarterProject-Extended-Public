@@ -64,8 +64,17 @@ actor DefaultNetworkClient: NetworkClient {
         var urlRequest = URLRequest(url: endpoint)
         urlRequest.httpMethod = request.httpMethod.rawValue
         
+
         try createBodyAndSetValueFor(urlRequest: &urlRequest, request: request)
         
+        if urlRequest.httpBody == nil {
+            if let formData = request.formData,
+               let formBody = createURLEncodedBody(from: formData) {
+                urlRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+                urlRequest.httpBody = formBody
+            }
+        }
+
         urlRequest.addValue(RequestConstants.token, forHTTPHeaderField: "X-Practicum-Mobile-Token")
         
         return urlRequest
@@ -95,6 +104,23 @@ actor DefaultNetworkClient: NetworkClient {
         }
     }
     
+    private func createURLEncodedBody(from formData: [String: [String]]) -> Data? {
+        var components: [String] = []
+        
+        for (key, values) in formData {
+            for value in values {
+                guard let encodedKey = key.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                      let encodedValue = value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+                else { continue }
+                
+                components.append("\(encodedKey)=\(encodedValue)")
+            }
+        }
+        
+        let bodyString = components.joined(separator: "&")
+        return bodyString.data(using: .utf8)
+    }
+
     private func parse<T: Decodable>(data: Data) async throws -> T {
         do {
             return try decoder.decode(T.self, from: data)

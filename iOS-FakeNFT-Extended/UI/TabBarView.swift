@@ -44,7 +44,12 @@ struct TabBarView: View {
                     }
                 }
                 .tag(0)
-            Text("Каталог")
+            CatalogView()
+                .tabItem {
+                    Label(
+                        NSLocalizedString("Tab.catalog", comment: ""),
+                        systemImage: "square.stack.3d.up.fill"
+                    )
                 .onAppear {
                     stateCurt = false
                 }

@@ -52,5 +52,16 @@ extension ServicesAssembly {
             paymentStorage: paymentStorage,
             cartStorage: cartStorage
         )
+        
+        var collectionService: CollectionService {
+            CollectionServiceImpl(networkClient: networkClient)
+        }
+        
+        var profileService: ProfileService {
+            ProfileServiceImpl(networkClient: networkClient)
+        }
+        
+        var orderService: OrderService {
+            OrderServiceImpl(networkClient: networkClient)
+        }
     }
-}
