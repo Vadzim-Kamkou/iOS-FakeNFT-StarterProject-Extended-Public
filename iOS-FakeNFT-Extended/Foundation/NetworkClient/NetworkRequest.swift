@@ -19,5 +19,4 @@ extension NetworkRequest {
     var httpMethod: HttpMethod { .get }
     var dto: Encodable? { nil }
     var formData: [String: [String]]? { nil }
-    
 }

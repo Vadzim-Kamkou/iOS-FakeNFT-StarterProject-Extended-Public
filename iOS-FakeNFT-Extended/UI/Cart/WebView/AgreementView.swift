@@ -17,7 +17,7 @@ struct AgreementView: View {
                 .ignoresSafeArea()
             VStack(spacing: 0) {
                 navigationBar
-                WebView(url: Constants.agreementURL, isLoading: $isLoading)
+                WebViewForAgreementView(url: Constants.agreementURL, isLoading: $isLoading)
                     .ignoresSafeArea(edges: .bottom)
             }
         }

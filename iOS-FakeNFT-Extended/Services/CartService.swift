@@ -33,7 +33,7 @@ final class CartServiceImpl: CartService {
         
         let request = NFTRequest(id: id)
         let nft: NftForCartModel = try await networkClient.send(request: request)
-        
+
         await storage.saveCartNFt(for: nft)
         
         return nft

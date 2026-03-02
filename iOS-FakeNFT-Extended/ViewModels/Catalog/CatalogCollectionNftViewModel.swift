@@ -32,8 +32,6 @@ final class CatalogCollectionNftViewModel: ObservableObject {
         cartJSON.toStringArray()
     }
     
-    
-    
     init(
         nft: Nft,
         profileService: ProfileService,

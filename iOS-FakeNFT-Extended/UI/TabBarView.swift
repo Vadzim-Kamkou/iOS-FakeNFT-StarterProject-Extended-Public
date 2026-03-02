@@ -45,19 +45,14 @@ struct TabBarView: View {
                 }
                 .tag(0)
             CatalogView()
+                .environment(servicesAssembly)
                 .tabItem {
                     Label(
                         NSLocalizedString("Tab.catalog", comment: ""),
                         systemImage: "square.stack.3d.up.fill"
                     )
-                .onAppear {
-                    stateCurt = false
-                }
-                .tabItem {
-                    VStack(spacing: 4) {
-                        Image(systemName: selectedTab == 1 ? "square.grid.2x2.fill" : "square.grid.2x2")
-                        Text("Каталог")
-                            .font(.caption2)
+                    .onAppear {
+                        stateCurt = false
                     }
                 }
                 .tag(1)

@@ -50,8 +50,9 @@ struct CatalogView: View {
 
 #Preview {
     CatalogView()
-        .environment(ServicesAssembly(
-            networkClient: DefaultNetworkClient(),
-            nftStorage: NftStorageImpl()
+        .environment(ServicesAssembly(networkClient: DefaultNetworkClient(),
+                                      nftStorage: NftStorageImpl(),
+                                      paymentStorage: PaymentStorageImpl(),
+                                      cartStorage: CartStorageImpl()
         ))
 }

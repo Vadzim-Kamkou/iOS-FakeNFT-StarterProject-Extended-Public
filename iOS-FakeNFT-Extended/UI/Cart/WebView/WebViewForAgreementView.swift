@@ -1,5 +1,5 @@
 //
-//  WebView.swift
+//  WebViewForAgreementView.swift
 //  iOS-FakeNFT-Extended
 //
 //  Created by Владимир on 13.02.2026.
@@ -7,7 +7,7 @@
 import SwiftUI
 import WebKit
 
-struct WebView: UIViewRepresentable {
+struct WebViewForAgreementView: UIViewRepresentable {
     let url: URL
     @Binding var isLoading: Bool
     

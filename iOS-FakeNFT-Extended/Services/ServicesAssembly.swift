@@ -36,6 +36,18 @@ final class ServicesAssembly {
     var cartSevice: CartServiceImpl {
         CartServiceImpl(networkClient: networkClient, storage: cartStorage)
     }
+    
+    var collectionService: CollectionService {
+        CollectionServiceImpl(networkClient: networkClient)
+    }
+    
+    var profileService: ProfileService {
+        ProfileServiceImpl(networkClient: networkClient)
+    }
+    
+    var orderService: OrderService {
+        OrderServiceImpl(networkClient: networkClient)
+    }
 }
 
 // MARK: Preview Helpers
@@ -52,16 +64,5 @@ extension ServicesAssembly {
             paymentStorage: paymentStorage,
             cartStorage: cartStorage
         )
-        
-        var collectionService: CollectionService {
-            CollectionServiceImpl(networkClient: networkClient)
-        }
-        
-        var profileService: ProfileService {
-            ProfileServiceImpl(networkClient: networkClient)
-        }
-        
-        var orderService: OrderService {
-            OrderServiceImpl(networkClient: networkClient)
-        }
     }
+}

@@ -205,7 +205,7 @@ extension CartNFTViewModel {
         var NFTArray = [CartNFTModel]()
         
         for i in array {
-            NFTArray.append(CartNFTModel(id: i.id, imageName: i.images.last ?? "", nftName: i.name, countStars: i.rating, price: i.price))
+            NFTArray.append(CartNFTModel(id: i.id, imageName: i.images.first ?? "", nftName: i.name, countStars: i.rating, price: i.price))
         }
         return NFTArray
     }
