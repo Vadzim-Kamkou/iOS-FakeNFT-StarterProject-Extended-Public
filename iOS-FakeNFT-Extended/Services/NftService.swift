@@ -2,6 +2,7 @@ import Foundation
 
 protocol NftService {
     func loadNft(id: String) async throws -> Nft
+    func loadNfts(ids: [String]) async throws -> [Nft]
 }
 
 final class NftServiceImpl: NftService {
@@ -21,5 +22,21 @@ final class NftServiceImpl: NftService {
         let nft: Nft = try await networkClient.send(request: request)
         await storage.saveNft(nft)
         return nft
+    }
+    
+    func loadNfts(ids: [String]) async throws -> [Nft] {
+        return try await withThrowingTaskGroup(of: Nft.self) { group in
+            for id in ids {
+                group.addTask {
+                    try await self.loadNft(id: id)
+                }
+            }
+            
+            var nfts: [Nft] = []
+            for try await nft in group {
+                nfts.append(nft)
+            }
+            return nfts
+        }
     }
 }

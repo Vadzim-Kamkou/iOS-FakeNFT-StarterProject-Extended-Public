@@ -11,10 +11,13 @@ protocol NetworkRequest: Sendable {
     var endpoint: URL? { get }
     var httpMethod: HttpMethod { get }
     var dto: Encodable? { get }
+    var formData: [String: [String]]? { get }
 }
 
 // default values
 extension NetworkRequest {
     var httpMethod: HttpMethod { .get }
     var dto: Encodable? { nil }
+    var formData: [String: [String]]? { nil }
+    
 }

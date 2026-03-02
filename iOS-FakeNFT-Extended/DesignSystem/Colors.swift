@@ -1,4 +1,5 @@
 import UIKit
+import SwiftUI
 
 extension UIColor {
     // Creates color from a hex string
@@ -64,4 +65,8 @@ extension UIColor {
         ? .yaBlackDark
         : .yaBlackLight
     }
+}
+
+extension Color {
+    static let blueUniversal = Color(red: 10.0 / 255.0, green: 132.0 / 255.0, blue: 255.0 / 255.0)
 }
