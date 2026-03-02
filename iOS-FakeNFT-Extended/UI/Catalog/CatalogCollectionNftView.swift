@@ -13,15 +13,15 @@ struct CatalogCollectionNftView: View {
     
     let nft: Nft
     @StateObject private var viewModel: CatalogCollectionNftViewModel
-
+    
     init(nft: Nft, servicesAssembly: ServicesAssembly) {
-           self.nft = nft
-           self._viewModel = StateObject(wrappedValue: CatalogCollectionNftViewModel(
-               nft: nft,
-               profileService: servicesAssembly.profileService,
-               orderService: servicesAssembly.orderService
-           ))
-       }
+        self.nft = nft
+        self._viewModel = StateObject(wrappedValue: CatalogCollectionNftViewModel(
+            nft: nft,
+            profileService: servicesAssembly.profileService,
+            orderService: servicesAssembly.orderService
+        ))
+    }
     
     private var favouriteImage: Image {
         viewModel.isFavouriteActive ? Image(.favouritesIcon) : Image(.favouritesIconNo)
@@ -84,7 +84,7 @@ struct CatalogCollectionNftView: View {
                         .frame(width: 40, height: 40)
                         .offset(x: 33, y: -33)
                 }
-                .buttonStyle(.plain)
+                    .buttonStyle(.plain)
             )
             
             ratingView
@@ -116,12 +116,13 @@ struct CatalogCollectionNftView: View {
 }
 
 #Preview {
-    let servicesAssembly = ServicesAssembly(
-        networkClient: DefaultNetworkClient(),
-        nftStorage: NftStorageImpl()
+    let servicesAssembly = ServicesAssembly(networkClient: DefaultNetworkClient(),
+                                            nftStorage: NftStorageImpl(),
+                                            paymentStorage: PaymentStorageImpl(),
+                                            cartStorage: CartStorageImpl()
     )
     
-    return CatalogCollectionNftView(
+    CatalogCollectionNftView(
         nft: Nft(
             id: "test-id",
             name: "Test NFT",

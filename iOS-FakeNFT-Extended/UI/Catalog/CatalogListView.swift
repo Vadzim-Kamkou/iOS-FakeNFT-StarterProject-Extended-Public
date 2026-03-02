@@ -85,8 +85,9 @@ struct CatalogListView: View {
             collectionService: CollectionServiceImpl(networkClient: DefaultNetworkClient())
         ))
     }
-    .environment(ServicesAssembly(
-        networkClient: DefaultNetworkClient(),
-        nftStorage: NftStorageImpl()
+    .environment(ServicesAssembly(networkClient: DefaultNetworkClient(),
+                                  nftStorage: NftStorageImpl(),
+                                  paymentStorage: PaymentStorageImpl(),
+                                  cartStorage: CartStorageImpl()
     ))
 }

@@ -7,7 +7,7 @@ enum HttpMethod: String {
     case delete = "DELETE"
 }
 
-protocol NetworkRequest {
+protocol NetworkRequest: Sendable {
     var endpoint: URL? { get }
     var httpMethod: HttpMethod { get }
     var dto: Encodable? { get }
@@ -19,5 +19,4 @@ extension NetworkRequest {
     var httpMethod: HttpMethod { .get }
     var dto: Encodable? { nil }
     var formData: [String: [String]]? { nil }
-    
 }

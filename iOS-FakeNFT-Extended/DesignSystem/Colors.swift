@@ -67,6 +67,6 @@ extension UIColor {
     }
 }
 
-extension Color {
-    static let blueUniversal = Color(red: 10.0 / 255.0, green: 132.0 / 255.0, blue: 255.0 / 255.0)
-}
+//extension Color {
+//    static let blueUniversal = Color(red: 10.0 / 255.0, green: 132.0 / 255.0, blue: 255.0 / 255.0)
+//}
