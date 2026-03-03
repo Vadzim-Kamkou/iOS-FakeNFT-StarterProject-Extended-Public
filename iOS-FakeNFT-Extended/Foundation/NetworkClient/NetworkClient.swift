@@ -64,7 +64,6 @@ actor DefaultNetworkClient: NetworkClient {
         var urlRequest = URLRequest(url: endpoint)
         urlRequest.httpMethod = request.httpMethod.rawValue
         
-
         try createBodyAndSetValueFor(urlRequest: &urlRequest, request: request)
         
         if urlRequest.httpBody == nil {
@@ -100,6 +99,13 @@ actor DefaultNetworkClient: NetworkClient {
                     throw NetworkClientError.incorrectRequest("[DefaultNetworkClient]: Failed to encode DTO")
                 }
                 urlRequest.httpBody = dtoEncoded
+            } else if let body = request.body {
+                urlRequest.httpBody = body
+                if let headers = request.headers {
+                    for (key, value) in headers {
+                        urlRequest.setValue(value, forHTTPHeaderField: key)
+                    }
+                }
             }
         }
     }
