@@ -112,6 +112,7 @@ struct CatalogCollectionNftView: View {
             }
         }
         .frame(width: 108, height: 192)
+        .toolbar(.hidden, for: .tabBar)
     }
 }
 

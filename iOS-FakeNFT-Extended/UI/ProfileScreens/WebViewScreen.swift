@@ -33,6 +33,7 @@ struct WebViewScreen: View {
             WebView1(url: url)
                 .ignoresSafeArea(edges: .bottom)
         }
+        .toolbar(.hidden, for: .tabBar)
         .navigationBarBackButtonHidden(true)
     }
 }
