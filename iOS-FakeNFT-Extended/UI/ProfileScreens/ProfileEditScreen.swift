@@ -9,7 +9,7 @@ import Kingfisher
 import ProgressHUD
 
 struct EditProfileScreen: View {
-    @EnvironmentObject var viewModel: ProfileViewModel
+    @Environment(ProfileViewModel.self) private var viewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(ServicesAssembly.self) private var services
     @State private var showingPhotoDialog = false
@@ -18,6 +18,7 @@ struct EditProfileScreen: View {
     @State private var showingExitAlert = false
     
     var body: some View {
+        @Bindable var viewModel = viewModel
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
@@ -181,7 +182,7 @@ struct EditProfileScreen: View {
 //    let profileService = ProfileServiceImpl(networkClient: networkClient)
 //    
 //    EditProfileScreen()
-//        .environmentObject(ProfileViewModel())
+//        .environment(ProfileViewModel())
 //        .environment(ServicesAssembly(
 //            networkClient: networkClient,
 //            nftStorage: nftStorage,
