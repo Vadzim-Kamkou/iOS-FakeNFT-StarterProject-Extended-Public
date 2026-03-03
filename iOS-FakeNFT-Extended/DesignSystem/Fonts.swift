@@ -19,3 +19,4 @@ extension Font {
     static var regular13 = Font.system(size: 13, weight: .regular)
     static var regular15 = Font.system(size: 15, weight: .regular)
 }
+
