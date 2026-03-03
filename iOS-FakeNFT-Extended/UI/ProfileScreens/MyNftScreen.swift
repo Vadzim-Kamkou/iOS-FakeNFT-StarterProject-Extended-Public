@@ -90,33 +90,3 @@ struct MyNftScreen: View {
         }
     }
 }
-
-#Preview {
-    let viewModel = ProfileViewModel()
-    let networkClient = DefaultNetworkClient()
-    let nftStorage = NftStorageImpl()
-    
-    MyNftScreen()
-        .environment(viewModel)
-        .environment(ServicesAssembly(
-            networkClient: networkClient,
-            nftStorage: nftStorage
-        ))
-}
-
-#Preview("Пустой список") {
-    let viewModel: ProfileViewModel = {
-        let vm = ProfileViewModel()
-        vm.allNfts = []
-        return vm
-    }()
-    let networkClient = DefaultNetworkClient()
-    let nftStorage = NftStorageImpl()
-    
-    MyNftScreen()
-        .environment(viewModel)
-        .environment(ServicesAssembly(
-            networkClient: networkClient,
-            nftStorage: nftStorage
-        ))
-}

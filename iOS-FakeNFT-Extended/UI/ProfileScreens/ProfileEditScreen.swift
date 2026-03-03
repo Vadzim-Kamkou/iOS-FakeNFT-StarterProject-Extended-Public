@@ -175,17 +175,3 @@ struct EditProfileScreen: View {
         }
     }
 }
-
-//#Preview {
-//    let networkClient = DefaultNetworkClient()
-//    let nftStorage = NftStorageImpl()
-//    let profileService = ProfileServiceImpl(networkClient: networkClient)
-//    
-//    EditProfileScreen()
-//        .environment(ProfileViewModel())
-//        .environment(ServicesAssembly(
-//            networkClient: networkClient,
-//            nftStorage: nftStorage,
-//            profileService: profileService
-//        ))
-//}

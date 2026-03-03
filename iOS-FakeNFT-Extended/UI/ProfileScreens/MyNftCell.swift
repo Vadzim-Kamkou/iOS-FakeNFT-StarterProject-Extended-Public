@@ -118,22 +118,3 @@ struct StarRatingView: View {
         }
     }
 }
-
-#Preview {
-    let networkClient = DefaultNetworkClient()
-    let nftStorage = NftStorageImpl()
-    
-    MyNftCell(nft:        NftId(
-        name: "April",
-        logoUrlString: "https://fivmagazine.com/wp-content/uploads/2022/04/nft-non-fungible-token-token-collection-bored-ape-yacht-club-example-army-monkey.jpg",
-        price: "1,78",
-        rating: 4,
-        creater: "Creator D",
-        isLiked: true
-    ))
-    .environment(ProfileViewModel())
-    .environment(ServicesAssembly(
-        networkClient: networkClient,
-        nftStorage: nftStorage
-    ))
-}

@@ -128,17 +128,9 @@ final class ProfileViewModel {
         }
 
         do {
-            let profile = try await service.updateProfile(
-                id: "1",
-                name: nil,
-                avatar: nil,
-                description: nil,
-                website: nil,
-                nfts: nil,
-                likes: newLikes
-            )
+            let profile = try await service.updateLikes(newLikes)
 
-            self.likeIds = profile.likeIds
+            self.likeIds = profile.likes
 
             if let index = allNfts.firstIndex(where: { $0.id == nftId }) {
                 allNfts[index].isLiked = !isCurrentlyLiked
@@ -207,7 +199,7 @@ final class ProfileViewModel {
                     return NftId(
                         remoteId: nft.id,
                         name: nft.name,
-                        logoUrlString: nft.images.first?.absoluteString ?? "",
+                        logoUrlString: nft.firstImageURL?.absoluteString ?? "",
                         price: String(format: "%.2f", nft.price),
                         rating: nft.rating,
                         creater: nft.author,
@@ -246,7 +238,7 @@ final class ProfileViewModel {
                     return NftId(
                         remoteId: nft.id,
                         name: nft.name,
-                        logoUrlString: nft.images.first?.absoluteString ?? "",
+                        logoUrlString: nft.firstImageURL?.absoluteString ?? "",
                         price: String(format: "%.2f", nft.price),
                         rating: nft.rating,
                         creater: nft.author,
@@ -286,7 +278,7 @@ final class ProfileViewModel {
                 avatar: avatarURL,
                 description: description,
                 website: website,
-                nfts: nil,
+                nfts: self.nftIds,
                 likes: self.likeIds
             )
             self.name = profile.name

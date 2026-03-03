@@ -59,22 +59,3 @@ struct FavoriteNftCell: View {
         }
     }
 }
-
-#Preview {
-    let networkClient = DefaultNetworkClient()
-    let nftStorage = NftStorageImpl()
-    
-    FavoriteNftCell(nft:  NftId(
-        name: "Lion",
-        logoUrlString: "https://fivmagazine.com/wp-content/uploads/2022/04/nft-non-fungible-token-token-collection-bored-ape-yacht-club-example-army-monkey.jpg",
-        price: "1.25",
-        rating: 4,
-        creater: "William Martinez",
-        isLiked: true
-    ))
-    .environment(ProfileViewModel())
-    .environment(ServicesAssembly(
-        networkClient: networkClient,
-        nftStorage: nftStorage
-    ))
-}

@@ -113,8 +113,5 @@ struct ProfileScreen: View {
 
 #Preview {
     ProfileScreen()
-        .environment(ServicesAssembly(
-            networkClient: DefaultNetworkClient(),
-            nftStorage: NftStorageImpl()
-        ))
+        .environment(ServicesAssembly.preview)
 }

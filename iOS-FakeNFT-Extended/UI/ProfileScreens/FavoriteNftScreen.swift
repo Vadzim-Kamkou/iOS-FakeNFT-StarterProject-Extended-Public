@@ -64,34 +64,3 @@ struct FavoriteNftScreen: View {
         }
     }
 }
-
-#Preview {
-    let viewModel = ProfileViewModel()
-    let networkClient = DefaultNetworkClient()
-    let nftStorage = NftStorageImpl()
-    
-    FavoriteNftScreen()
-        .environment(viewModel)
-        .environment(ServicesAssembly(
-            networkClient: networkClient,
-            nftStorage: nftStorage
-        ))
-}
-
-#Preview("Пустой список") {
-    let viewModel: ProfileViewModel = {
-        let vm = ProfileViewModel()
-        vm.allNfts = []
-        return vm
-    }()
-    let networkClient = DefaultNetworkClient()
-    let nftStorage = NftStorageImpl()
-    let services = ServicesAssembly(
-        networkClient: networkClient,
-        nftStorage: nftStorage
-    )
-    
-    FavoriteNftScreen()
-        .environment(viewModel)
-        .environment(services)
-}

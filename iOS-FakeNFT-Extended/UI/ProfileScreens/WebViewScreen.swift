@@ -30,7 +30,7 @@ struct WebViewScreen: View {
             
             .background(Color.white)
 
-            WebView(url: url)
+            WebView1(url: url)
                 .ignoresSafeArea(edges: .bottom)
         }
         .navigationBarBackButtonHidden(true)

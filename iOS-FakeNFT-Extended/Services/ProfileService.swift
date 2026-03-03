@@ -29,11 +29,19 @@ final class ProfileServiceImpl: ProfileService {
             description: description,
             website: website,
             avatar: avatar,
+            nfts: nfts,
             likes: likes ?? []
         )
-
-        let responseDTO: ProfileResponseDTO = try await networkClient.send(request: request)
-        return responseDTO.toDomain()
+        let profile: Profile = try await networkClient.send(request: request)
+        return ProfileStruct(
+            name: profile.name,
+            description: profile.description,
+            site: profile.website,
+            urlString: profile.avatar,
+            allNfts: [],
+            nftIds: profile.nfts,
+            likeIds: profile.likes
+        )
     }
 
     func getProfile() async throws -> Profile {

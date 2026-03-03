@@ -21,40 +21,23 @@ struct UpdateProfileRequest: NetworkRequest {
     }
 }
 
-struct ProfileUpdateRequestDTO: Encodable {
+struct ProfileUpdateRequest: NetworkRequest {
+    let id: String
     let name: String?
     let avatar: String?
     let description: String?
     let website: String?
-    let likes: [String]?
+    let nfts: [String]
+    let likes: [String]
     
-    enum CodingKeys: String, CodingKey {
-        case name, avatar, description, website, likes
-    }
-    
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encodeIfPresent(name, forKey: .name)
-        try container.encodeIfPresent(avatar, forKey: .avatar)
-        try container.encodeIfPresent(description, forKey: .description)
-        try container.encodeIfPresent(website, forKey: .website)
-        try container.encodeIfPresent(likes, forKey: .likes)
-    }
-}
-
-struct ProfileUpdateRequest: NetworkRequest {
-    let id: String
-    let dto: Encodable?
-    
-    init(id: String, name: String?, description: String?, website: String?, avatar: String?, likes: [String]) {
+    init(id: String, name: String?, description: String?, website: String?, avatar: String?, nfts: [String]?, likes: [String]) {
         self.id = id
-        self.dto = ProfileUpdateRequestDTO(
-            name: name,
-            avatar: avatar,
-            description: description,
-            website: website,
-            likes: likes
-        )
+        self.name = name
+        self.avatar = avatar
+        self.description = description
+        self.website = website
+        self.nfts = nfts ?? []
+        self.likes = likes
     }
     
     var endpoint: URL? {
@@ -63,5 +46,30 @@ struct ProfileUpdateRequest: NetworkRequest {
     
     var httpMethod: HttpMethod {
         .put
+    }
+
+    var formData: [String: [String]]? {
+        var data: [String: [String]] = [:]
+
+        if let name {
+            data["name"] = [name]
+        }
+        if let avatar {
+            data["avatar"] = [avatar]
+        }
+        if let description {
+            data["description"] = [description]
+        }
+        if let website {
+            data["website"] = [website]
+        }
+        if !nfts.isEmpty {
+            data["nfts"] = nfts
+        }
+        if !likes.isEmpty {
+            data["likes"] = likes
+        }
+
+        return data.isEmpty ? nil : data
     }
 }

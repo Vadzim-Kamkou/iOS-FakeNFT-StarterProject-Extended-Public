@@ -32,10 +32,8 @@ struct TabBarView: View {
     
     var body: some View {
         TabView {
-            Text("Профиль")
-                .onAppear {
-                    stateCurt = false
-                }
+            ProfileScreen()
+                .environment(ServicesAssembly.preview)
                 .tabItem {
                     VStack(spacing: 0) {
                         Image(systemName:  "person.fill")
