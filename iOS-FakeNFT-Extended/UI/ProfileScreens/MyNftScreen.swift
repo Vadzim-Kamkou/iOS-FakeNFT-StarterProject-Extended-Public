@@ -38,6 +38,7 @@ struct MyNftScreen: View {
                     }
                 }
             }
+            .toolbar(.hidden, for: .tabBar)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {

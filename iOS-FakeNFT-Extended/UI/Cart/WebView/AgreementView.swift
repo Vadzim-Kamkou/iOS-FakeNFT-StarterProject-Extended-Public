@@ -40,7 +40,7 @@ struct AgreementView: View {
             Button {
                 navigationPath.removeLast()
             } label: {
-                Image(systemName: "chevron.backward")
+                Image(.backwardChevron)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 24, height: 24)

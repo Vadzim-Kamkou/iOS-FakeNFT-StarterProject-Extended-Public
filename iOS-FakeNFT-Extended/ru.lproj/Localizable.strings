@@ -25,3 +25,5 @@
 "Payment failed" = "Не удалось произвести \n оплату";
 "Load NFT failed" = "Загрузка NFT не удалась";
 "Cancel" = "Отмена";
+"Profile" = "Профиль";
+"Catalog" = "Каталог";

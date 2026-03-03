@@ -2,11 +2,8 @@ import SwiftUI
 import Logging
 
 struct TabBarView: View {
-    
-    @State private var selectedTab = 0
-    @State private var stateCurt = false
+    @State private var selectTab: TabBarState = .catalog
     private let cartDataStore: CartDataStore
-    
     let servicesAssembly: ServicesAssembly
     
     @State var cartViewModel: CartNFTViewModel
@@ -31,56 +28,53 @@ struct TabBarView: View {
     }
     
     var body: some View {
-        TabView {
+        TabView(selection: $selectTab) {
             ProfileScreen()
                 .environment(ServicesAssembly.preview)
                 .tabItem {
                     VStack(spacing: 0) {
-                        Image(systemName:  "person.fill")
-                        Text("Профиль")
-                            .font(.caption2)
+                        Image(selectTab == .profile ? .profileTabBarActive : .profileTabBarUnActive)
+                            .frame(width: 30, height: 30)
+                        
+                        Text("Profile")
+                            .font(.caption3)
+                            .foregroundStyle(selectTab == .profile ? .blueUniversal : .text)
+                            .padding(.top, 4)
                     }
+                    .frame(width: 76, height: 49)
                 }
-                .tag(0)
+                .tag(TabBarState.profile)
+            
             CatalogView()
                 .environment(servicesAssembly)
                 .tabItem {
-                    Label(
-                        NSLocalizedString("Tab.catalog", comment: ""),
-                        systemImage: "square.stack.3d.up.fill"
-                    )
-                    .onAppear {
-                        stateCurt = false
+                    VStack(spacing: 0) {
+                        Image(selectTab == .catalog ? .catalogTabBArActive : .catalogTabBarUnActive)
+                            .frame(width: 30, height: 30)
+                        
+                        Text("Catalog")
+                            .font(.caption3)
+                            .foregroundStyle(selectTab == .catalog ? .blueUniversal : .text)
+                            .padding(.top, 4)
                     }
+                    .frame(width: 76, height: 49)
                 }
-                .tag(1)
+                .tag(TabBarState.catalog)
+            
             CartMainView(viewModel: cartViewModel, paymentViewModel: paymentViewModel)
-                .onAppear {
-                    stateCurt = true
-                }
                 .tabItem {
                     VStack(spacing: 0) {
-                        Image(stateCurt ? .cartTabBarActive : .cartTabBarUnActive)
-                            .frame(width: 24, height: 24)
+                        Image(selectTab == .cart ? .cartTabBarActive : .cartTabBarUnActive)
+                            .frame(width: 30, height: 30)
                         
                         Text("Cart")
                             .font(.caption3)
-                            .foregroundStyle(stateCurt ? .blueUniversal : .red)
+                            .foregroundStyle(selectTab == .cart ? .blueUniversal : .text)
+                            .padding(.top, 4)
                     }
+                    .frame(width: 76, height: 49)
                 }
-                .tag(2)
-            Text("Статистика")
-                .onAppear {
-                    stateCurt = false
-                }
-                .tabItem {
-                    VStack(spacing: 4) {
-                        Image(systemName: selectedTab == 1 ? "chart.bar.fill" : "chart.bar")
-                        Text("Статистика")
-                            .font(.caption2)
-                    }
-                }
-                .tag(3)
+                .tag(TabBarState.cart)
         }
         .disabled(cartViewModel.cartScreenState == .Loading ? true : false)
     }
@@ -88,4 +82,10 @@ struct TabBarView: View {
 
 #Preview {
     TabBarView(servicesAssembly: ServicesAssembly.preview)
+}
+
+enum TabBarState {
+    case cart
+    case profile
+    case catalog
 }
