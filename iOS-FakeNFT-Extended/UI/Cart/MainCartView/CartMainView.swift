@@ -130,7 +130,7 @@ struct CartMainView: View {
 }
 
 #Preview {
-    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), cartService: ServicesAssembly.preview.cartSevice)
+    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), cartService: ServicesAssembly.preview.cartService)
     
     let paymentService = PaymentServices(networkClient: DefaultNetworkClient(), storage: PaymentStorageImpl())
     let paymentViewModel = PaymentViewModel(paymentService: paymentService, dataStore: CartDataStore())
@@ -157,7 +157,7 @@ struct CartMainView: View {
 }
 
 #Preview("Russian") {
-    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), cartService: ServicesAssembly.preview.cartSevice)
+    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), cartService: ServicesAssembly.preview.cartService)
     
     let paymentService = PaymentServices(networkClient: DefaultNetworkClient(), storage: PaymentStorageImpl())
     let paymentViewModel = PaymentViewModel(paymentService: paymentService, dataStore: CartDataStore())
@@ -167,7 +167,7 @@ struct CartMainView: View {
 }
 
 #Preview("English") {
-    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), cartService: ServicesAssembly.preview.cartSevice)
+    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), cartService: ServicesAssembly.preview.cartService)
     
     let paymentService = PaymentServices(networkClient: DefaultNetworkClient(), storage: PaymentStorageImpl())
     let paymentViewModel = PaymentViewModel(paymentService: paymentService, dataStore: CartDataStore())

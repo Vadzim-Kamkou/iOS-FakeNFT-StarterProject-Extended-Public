@@ -79,7 +79,7 @@ struct CartFilterView: View {
 
 #Preview {
     @Previewable @State var needSelectFilter = false
-    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), cartService: ServicesAssembly.preview.cartSevice)
+    @Previewable @State var viewModel = CartNFTViewModel(dataStore: CartDataStore(), cartService: ServicesAssembly.preview.cartService)
     
     ZStack {
         Color

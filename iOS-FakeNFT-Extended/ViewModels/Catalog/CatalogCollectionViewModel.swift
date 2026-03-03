@@ -70,7 +70,7 @@ final class CatalogCollectionViewModel: ObservableObject {
         }
     }
     
-    func loadCartIfNeeded(orderService: OrderService) async {
+    func loadCartIfNeeded(cartService: CartService) async {
         let cachedCartJSON = UserDefaults.standard.string(forKey: "user_cart") ?? "[]"
         let cachedCart = cachedCartJSON.toStringArray()
         
@@ -79,9 +79,9 @@ final class CatalogCollectionViewModel: ObservableObject {
         }
         
         do {
-            let order = try await orderService.getOrder()
+            let cartArray = try await cartService.loadCartArray()
             
-            let cartJSON = order.nfts.toJSONString()
+            let cartJSON = cartArray.nfts.toJSONString()
             UserDefaults.standard.set(cartJSON, forKey: "user_cart")
         } catch {
         }

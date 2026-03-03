@@ -84,7 +84,7 @@ struct CartCellView:View {
     ZStack {
         Color.clear
             .background(.backgroundForView)
-        CartCellView(viewModel: CartNFTViewModel(dataStore: CartDataStore(), cartService: ServicesAssembly.preview.cartSevice), nft: CartNFTModel(id: "", imageName:"https://code.s3.yandex.net/Mobile/iOS/NFT/Peach/Daisy/3.png", nftName: "NFT 1" , countStars: 5, price: 1.2))
+        CartCellView(viewModel: CartNFTViewModel(dataStore: CartDataStore(), cartService: ServicesAssembly.preview.cartService), nft: CartNFTModel(id: "", imageName:"https://code.s3.yandex.net/Mobile/iOS/NFT/Peach/Daisy/3.png", nftName: "NFT 1" , countStars: 5, price: 1.2))
             .padding(20)
     }
 }

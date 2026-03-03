@@ -139,7 +139,7 @@ extension CartNFTViewModel {
     
     private func remove(newArray: [CartNFTModel]) async -> Bool {
         
-        if let _ = try? await cartService.updateCart(new: CartArrayModel(nfts: newArray.map({ $0.id}))) {
+        if let _ = try? await cartService.updateCart(newArray.map({ $0.id })) {
             return true
         } else {
             return false

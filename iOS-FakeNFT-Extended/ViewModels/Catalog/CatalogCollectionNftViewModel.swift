@@ -22,7 +22,8 @@ final class CatalogCollectionNftViewModel: ObservableObject {
     
     private let nft: Nft
     private let profileService: ProfileService
-    private let orderService: OrderService
+    private let cartService: CartService
+    
     
     private var favorites: [String] {
         favoritesJSON.toStringArray()
@@ -35,11 +36,11 @@ final class CatalogCollectionNftViewModel: ObservableObject {
     init(
         nft: Nft,
         profileService: ProfileService,
-        orderService: OrderService
+        cartService: CartService
     ) {
         self.nft = nft
         self.profileService = profileService
-        self.orderService = orderService
+        self.cartService = cartService
         
         self.isFavouriteActive = favorites.contains(nft.id)
         self.isInCartActive = cart.contains(nft.id)
@@ -88,8 +89,8 @@ final class CatalogCollectionNftViewModel: ObservableObject {
         saveCart(newCart)
         
         do {
-            let updatedOrder = try await orderService.updateCart(newCart)
-            saveCart(updatedOrder.nfts)
+            let updatedCart = try await cartService.updateCart(newCart)
+            saveCart(updatedCart.nfts)
             print("Корзина обновлена на сервере")
         } catch {
             print("Ошибка обновления корзины: \(error)")

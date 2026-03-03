@@ -33,7 +33,7 @@ final class ServicesAssembly {
                         storage: paymentStorage)
     }
     
-    var cartSevice: CartServiceImpl {
+    var cartService: CartServiceImpl {
         CartServiceImpl(networkClient: networkClient, storage: cartStorage)
     }
     
@@ -43,10 +43,6 @@ final class ServicesAssembly {
     
     var profileService: ProfileService {
         ProfileServiceImpl(networkClient: networkClient)
-    }
-    
-    var orderService: OrderService {
-        OrderServiceImpl(networkClient: networkClient)
     }
 }
 

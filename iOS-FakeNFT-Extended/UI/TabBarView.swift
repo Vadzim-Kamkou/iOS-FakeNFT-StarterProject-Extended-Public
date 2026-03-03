@@ -16,7 +16,7 @@ struct TabBarView: View {
         _cartViewModel = State(
             initialValue: CartNFTViewModel(
                 dataStore: cartDataStore,
-                cartService: servicesAssembly.cartSevice
+                cartService: servicesAssembly.cartService
             )
         )
         _paymentViewModel = State(

@@ -83,7 +83,7 @@ struct CatalogCollectionView: View {
             
             await viewModel.loadNfts()
             await viewModel.loadFavoritesIfNeeded(profileService: servicesAssembly.profileService)
-            await viewModel.loadCartIfNeeded(orderService: servicesAssembly.orderService)
+            await viewModel.loadCartIfNeeded(cartService: servicesAssembly.cartService)
 
         }
     }

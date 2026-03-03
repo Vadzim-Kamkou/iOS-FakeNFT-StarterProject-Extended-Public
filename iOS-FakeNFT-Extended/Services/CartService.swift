@@ -8,10 +8,10 @@
 protocol CartService {
     func loadCartArray() async throws -> CartArrayModel
     func loadNftForCart(id: String) async throws -> NftForCartModel
-    func updateCart(new array: CartArrayModel) async throws -> Bool
+    func updateCart(_ nfts: [String]) async throws -> CartArrayModel
 }
 
-final class CartServiceImpl: CartService {
+actor CartServiceImpl: CartService {
     private let networkClient: NetworkClient
     private let storage: CartStorage
     
@@ -39,13 +39,9 @@ final class CartServiceImpl: CartService {
         return nft
     }
     
-    func updateCart(new array: CartArrayModel) async throws -> Bool {
-        let request = PutOrderRequest(nfts: array.nfts)
-        do {
-            let _: CartArrayModel = try await networkClient.send(request: request)
-            return true
-        } catch {
-            return false
-        }
+    func updateCart(_ nfts: [String]) async throws -> CartArrayModel {
+        let request = PutOrderRequest(nfts: nfts)
+        let updatedCart: CartArrayModel = try await networkClient.send(request: request)
+        return updatedCart
     }
 }

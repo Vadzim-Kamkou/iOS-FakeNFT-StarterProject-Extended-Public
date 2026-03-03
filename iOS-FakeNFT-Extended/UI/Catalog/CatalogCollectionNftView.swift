@@ -19,7 +19,7 @@ struct CatalogCollectionNftView: View {
         self._viewModel = StateObject(wrappedValue: CatalogCollectionNftViewModel(
             nft: nft,
             profileService: servicesAssembly.profileService,
-            orderService: servicesAssembly.orderService
+            cartService: servicesAssembly.cartService
         ))
     }
     
@@ -112,7 +112,7 @@ struct CatalogCollectionNftView: View {
             }
         }
         .frame(width: 108, height: 192)
-        .toolbar(.hidden, for: .tabBar)
+//        .toolbar(.hidden, for: .tabBar)
     }
 }
 
