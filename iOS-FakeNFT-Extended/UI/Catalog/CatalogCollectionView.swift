@@ -74,7 +74,7 @@ struct CatalogCollectionView: View {
         }
         .toolbarBackground(.hidden, for: .navigationBar)
         .sheet(item: $selectedNft) { nft in
-            NftDetailBridgeView()
+            NftDetailBridgeView(nftId: nft.id)
         }
         .fullScreenCover(isPresented: $showAuthorPage) {
             authorWebView
